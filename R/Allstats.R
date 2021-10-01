@@ -12,9 +12,16 @@
 #'
 #'
 #'
-Allstats<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
+Allstats_old<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
 {
-  LETTERS210729 <- apply(as.matrix(1:400000),1, function(x) paste0("V",x))
+  LETTERS702 <- c(sapply(LETTERS, function(x) paste0(x, LETTERS)))
+  LETTERS37232 <- c(LETTERS, LETTERS702, sapply(LETTERS, function(x) paste0(x,
+                                                                            LETTERS702)))
+  LETTERS210729 <- c(LETTERS, LETTERS702,LETTERS37232, sapply(LETTERS, function(x) paste0(x,
+                                                                                          LETTERS37232)))
+  LETTERS210729 <- LETTERS210729[-365]
+  LETTERS210729<-LETTERS210729[-10205]
+  LETTERS210729<-LETTERS210729[-267101]
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]
   Data<-Data %>% dplyr::arrange(Group)
@@ -444,7 +451,7 @@ Allstats<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
 }
 
 ####################NEW#####################################################33
-Allstats_new<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
+Allstats<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
 {
   LETTERS210729 <- apply(as.matrix(1:400000),1, function(x) paste0("V",x))
   colnames(Data) <- Data[1, ]
