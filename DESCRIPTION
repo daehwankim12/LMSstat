@@ -12,7 +12,7 @@ Description: Automation of statistical tests with an identical data input.
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 License: MIT + file LICENSE
 biocViews:
 Imports: 

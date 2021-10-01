@@ -443,6 +443,7 @@ Allstats<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
   }
 }
 
+#' @export
 Allstats_new<-function (Data, Adjust_p_value = T, Adjust_method = "BH")
 {
   LETTERS210729 <- apply(as.matrix(1:400000),1, function(x) paste0("V",x))
