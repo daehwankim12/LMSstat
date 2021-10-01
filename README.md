@@ -24,6 +24,12 @@ The package includes
 * PCA
 
 * PCoA
+## Contribution acknowledgement
+### Oct.01/2021 Daehwan Kim
+
+- Allstats_new optimization for faster processing
+
+- bug fix of Allstats (regarding LETTERS210729) 
 
 ## Instructions
 
@@ -107,7 +113,9 @@ Classification<-read.csv("statT_G.csv",header = F)
 ### Univariate statistics
 
 ```
-Statfile<-Allstats(Data,Adjust_p_value = T, Adjust_method = "BH")
+Statfile<-Allstats_new(Data,Adjust_p_value = T, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
+
+Statfile<-Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous version using for-loop
 ```
 ##### Adjustable parameters
 
