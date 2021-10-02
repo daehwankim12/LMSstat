@@ -47,7 +47,7 @@ https://cran.r-project.org/bin/windows/Rtools/
 ```
 install.packages("devtools")
 
-devtools::install_github("CHKim5/LMSstat", INSTALL_opts = c("--no-multiarch"))
+devtools::install_github("CHKim5/LMSstat")
 
 library(LMSstat)
 ```
@@ -77,7 +77,7 @@ data("Data")
 
 setwd("C:/Users/82102/Desktop")
 
-Data <- read.csv("statT.csv",header = F)
+Data <- read.csv("statT.csv", header = F)
 ```
 **The column "Multilevel" is mandatory for the code to run flawlessly.**
 
