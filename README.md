@@ -47,7 +47,7 @@ https://cran.r-project.org/bin/windows/Rtools/
 ```
 install.packages("devtools")
 
-devtools::install_github("CHKim5/LMSstat")
+devtools::install_github("CHKim5/LMSstat", INSTALL_opts=c("--no-multiarch"))
 
 library(LMSstat)
 ```
