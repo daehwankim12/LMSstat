@@ -8,20 +8,26 @@
 #' @export
 #'
 #' @examples data(Data)
-#' D_tran(Data,param = "Pareto")
-D_tran<-function(data,param = "None",save = F){
+#' D_tran(Data, param = "Pareto")
+D_tran <- function(data, param = "None", save = F) {
   colnames(data) <- data[1, ]
   data <- data[-1, -2]
-  data<-data %>% dplyr::arrange(Group)
-  rownames(data)<-data[,1];data<-data[,-1]
-  data[,2:ncol(data)]<-sapply(data[,2:ncol(data)],function(x) as.numeric(x))
+  data <- data %>% dplyr::arrange(Group)
+  rownames(data) <- data[, 1]
+  data <- data[, -1]
+  data[, 2:ncol(data)] <- sapply(data[, 2:ncol(data)], function(x) as.numeric(x))
 
-  if (param == "None"){
-    data = data} else if (param == "Auto"){
-      data[,2:ncol(data)]<-scale(data[,2:ncol(data)],scale = T)} else if (param == "log10"){
-        data[,2:ncol(data)]<-log10(data[,2:ncol(data)])} else if (param == "Pareto"){
-          data[,2:ncol(data)]<-scale(data[,2:ncol(data)], scale = sqrt(sapply(data[,2:ncol(data)], sd)))}
-  if (save ==T){
-  write.csv(data,paste0("datafile_scaled_to_",param,".csv"))}
+  if (param == "None") {
+    data <- data
+  } else if (param == "Auto") {
+    data[, 2:ncol(data)] <- scale(data[, 2:ncol(data)], scale = T)
+  } else if (param == "log10") {
+    data[, 2:ncol(data)] <- log10(data[, 2:ncol(data)])
+  } else if (param == "Pareto") {
+    data[, 2:ncol(data)] <- scale(data[, 2:ncol(data)], scale = sqrt(sapply(data[, 2:ncol(data)], sd)))
+  }
+  if (save == T) {
+    write.csv(data, paste0("datafile_scaled_to_", param, ".csv"))
+  }
   return(data)
 }

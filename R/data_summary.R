@@ -6,13 +6,17 @@
 #' @export
 #'
 #' @examples
-data_summary <- function(data, varname, groupnames){
-  summary_func <- function(x, col){
-    c(mean = mean(x[[col]], na.rm=TRUE),
-      SEM = sd(x[[col]]/sqrt(length(x[[col]])), na.rm=TRUE))
+data_summary <- function(data, varname, groupnames) {
+  summary_func <- function(x, col) {
+    c(
+      mean = mean(x[[col]], na.rm = TRUE),
+      SEM = sd(x[[col]] / sqrt(length(x[[col]])), na.rm = TRUE)
+    )
   }
-  data_sum<-ddply(data, groupnames, .fun=summary_func,
-                  varname)
+  data_sum <- ddply(data, groupnames,
+    .fun = summary_func,
+    varname
+  )
   data_sum <- plyr::rename(data_sum, c("mean" = "len"))
   return(data_sum)
 }
