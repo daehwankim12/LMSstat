@@ -77,7 +77,7 @@ data("Data")
 
 setwd("C:/Users/82102/Desktop")
 
-Data<-read.csv("statT.csv",header = F)
+Data <- read.csv("statT.csv",header = F)
 ```
 **The column "Multilevel" is mandatory for the code to run flawlessly.**
 
@@ -101,7 +101,7 @@ Data<-read.csv("statT.csv",header = F)
 data("Classification")
 
 # Uploading your own Data
-Classification<-read.csv("statT_G.csv",header = F)
+Classification <- read.csv("statT_G.csv", header = F)
 ```
 
 <p align="center">
@@ -113,9 +113,9 @@ Classification<-read.csv("statT_G.csv",header = F)
 ### Univariate statistics
 
 ```
-Statfile<-Allstats_new(Data,Adjust_p_value = T, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
+Statfile <- Allstats_new(Data,Adjust_p_value = T, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
 
-Statfile<-Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous version using for-loop
+Statfile <- Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous version using for-loop
 ```
 ##### Adjustable parameters
 
@@ -126,7 +126,7 @@ Statfile<-Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous ver
 ```
 head(Statfile[["Result"]]) # includes all statistical results
 
-write.csv(Statfile[["Result"]],"p_value_result.csv")  # Write csv with all the p-value included
+write.csv(Statfile[["Result"]], "p_value_result.csv")  # Write csv with all the p-value included
 ```
 ### Plots
 
@@ -171,7 +171,7 @@ AS_barplot(Statfile,asterisk = "Scheffe")
 ### Scaling & Transformation
 
 ```
-scaled_data<-D_tran(Data,param = "Auto")
+scaled_data <- D_tran(Data, param = "Auto")
 ```
 &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Raw_Data**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Scaled_Data**
 <p align="center">
@@ -190,9 +190,9 @@ scaled_data<-D_tran(Data,param = "Auto")
 ```
 #Shapiro Wilk test
 
-Result<-Norm_test(Data)
+Result <- Norm_test(Data)
 
-write.csv(Result,"Normality_test_Result.csv")
+write.csv(Result, "Normality_test_Result.csv")
 ```
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/126578553-f2d583db-d649-4db7-92bb-8cfa9433904a.PNG" width="400" height="350">
@@ -218,8 +218,8 @@ SRH(Data)
 
 ```
 # Makes a subdirectory and saves Volcano plots for different combination of groups
-Test<-Allstats(Data)
-Volcano(Test,asterisk = "t-test")
+Test <- Allstats(Data)
+Volcano(Test, asterisk = "t-test")
 ```
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/127811109-0cb273ba-3c01-4679-9cb3-c510f3176592.png" width="400" height="400">
@@ -250,7 +250,7 @@ Volcano(Test,asterisk = "t-test")
 ```
 # Makes a subdirectory and saves Heatmap
 
-scaled_data<-D_tran(Data,param = "Auto")
+scaled_data <- D_tran(Data, param = "Auto")
 
 AS_heatmap(scaled_data) #data inheriting from D_tran
 
@@ -302,7 +302,7 @@ Indiv_Perm(Data) # The group information is treated as a factor
 Loops PERMANOVA over different classes provided by Classification
 
 ```
-Result<-Multi_Perm(Data,Classification) # The group information is treated as factors
+Result <- Multi_Perm(Data, Classification) # The group information is treated as factors
 ```
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/125875797-89b696dd-f2a7-4ff3-aec9-74ac4b9075f9.PNG" width="750" height="400">
@@ -316,7 +316,7 @@ Result<-Multi_Perm(Data,Classification) # The group information is treated as fa
 #### NMDS
 ```
 # Makes a subdirectory and saves NMDS plots for all of the distance metrics
-NMDS(Data,methods = c("manhattan","bray","euclidean"))
+NMDS(Data, methods = c("manhattan", "bray", "euclidean"))
 ```
 <p align="center">
 <img src=https://user-images.githubusercontent.com/77651662/125900616-c0c6728d-0b3a-445b-bf41-e32be766924f.png width="600" height="500">
@@ -336,7 +336,7 @@ NMDS(Data,methods = c("manhattan","bray","euclidean"))
 #### PCA
 ```
 # Makes a subdirectory and saves PCA plot
-PCA(Data,components = c(1,2),legend_position = "none"))
+PCA(Data, components = c(1, 2), legend_position = "none"))
 ```
 <p align="center">
 <img src=https://user-images.githubusercontent.com/77651662/126108588-cfe688c6-2c90-485d-a197-ef1eb7a82cb5.png width="600" height="500">
@@ -356,7 +356,7 @@ PCA(Data,components = c(1,2),legend_position = "none"))
 #### PCoA
 ```
 # Makes a subdirectory and saves PCoA plot
-PCoA(Data,components = c(1,2),methods = c("bray", "manhattan"))
+PCoA(Data, components = c(1, 2), methods = c("bray", "manhattan"))
 ```
 <p align="center">
 <img src=https://user-images.githubusercontent.com/77651662/127433788-7aa75a05-3559-4bd1-9504-c1234c5905d4.png width="600" height="500">
