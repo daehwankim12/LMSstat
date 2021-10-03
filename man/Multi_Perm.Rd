@@ -22,6 +22,6 @@ Computes PERMANOVA with vegan using multiple group information
 \examples{
 data(Data)
 data(Classification)
-Result<-Multi_Perm(Data,Classification)
-Note that the code recognizes each class as a factor.
+Result <- Multi_Perm(Data, Classification)
+# Note that the code recognized each class as a factor.
 }

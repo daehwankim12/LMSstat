@@ -10,7 +10,7 @@
 #' @examples data(Data)
 #' data(Classification)
 #' Result <- Multi_Perm(Data, Classification)
-#' Note that the code recognized each class as a factor
+#' # Note that the code recognized each class as a factor.
 Multi_Perm <- function(Data, Classification, method = "bray") {
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, ]

@@ -7,8 +7,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "demizor3@gmail.com")
 Description: Automation of statistical tests with an identical data input. 
-  The package Includes most Statistical tests used in metabolomics,
-  aiming to reduce arduous work searching for packages and changing data input.
+    The package Includes most Statistical tests used in metabolomics,
+    aiming to reduce arduous work searching for packages and changing data input.
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

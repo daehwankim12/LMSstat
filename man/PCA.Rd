@@ -46,5 +46,5 @@ Automatically save PCA plot for the selected dimension metrics
 }
 \examples{
 data(Data)
-PCA(Data,components = c(1,2),legend_position = "none")
+PCA(Data, components = c(1, 2), legend_position = "none")
 }

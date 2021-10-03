@@ -49,6 +49,5 @@ Automatically save PCoA plots for the selected dimension metrics
 }
 \examples{
 data(Data)
-PCoA(Data,methods = c("euclidian","manhattan","bray"))
-
+PCoA(Data, methods = c("euclidian", "manhattan", "bray"))
 }

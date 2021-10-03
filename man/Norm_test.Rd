@@ -16,7 +16,6 @@ dataframe with shapiro wilk test
 Normality test with Shaprio_Wilk_test
 }
 \examples{
-Result<-Norm_test(Data)
-write.csv(Result,"Normality_test_Result.csv")
-
+Result <- Norm_test(Data)
+write.csv(Result, "Normality_test_Result.csv")
 }
