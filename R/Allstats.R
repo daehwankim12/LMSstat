@@ -11,7 +11,7 @@
 #' Result <- Allstats(Data)
 #' Result <- Allstats_new(Data) # faster version contributed by Daehwan Kim
 Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
-  LETTERS210729 <- apply(as.matrix(1:400000), 1, function(x) paste0("V", x))
+  LETTERS210729 <- paste0("V", 1:500000)
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]
   Data <- Data %>% dplyr::arrange(Group)
