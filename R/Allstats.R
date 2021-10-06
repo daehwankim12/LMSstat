@@ -574,27 +574,47 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
   if (length(unique(Data_final$Group)) == 2) {
     groups_split <- split(Data_tmp, Data_tmp$Group)
 
-    #### ttest####
+    #### ttest ####
     split_t_test <- function(x, i) {
-      t.test(
-        groups_split[[x[1]]][[i]],
-        groups_split[[x[2]]][[i]]
-      )[["p.value"]]
+      if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
+        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
+          1
+        } else {
+          0
+        }
+      } else {
+        t.test(
+          groups_split[[x[1]]][[i]],
+          groups_split[[x[2]]][[i]]
+        )[["p.value"]]
+      }
     }
+
+
     res_ttest <- lapply(
       (seq_len(ncol(Data_tmp) - 2) + 2),
       function(i) as.list(combn(names(groups_split), 2, split_t_test, i = i))
     )
+
+
     df_ttest <- data.table::rbindlist(res_ttest)
     Result <- df_ttest
     print("T-test has finished")
 
-    #### utest####
+    #### utest ####
     split_u_test <- function(x, i) {
-      wilcox.test(
-        groups_split[[x[1]]][[i]],
-        groups_split[[x[2]]][[i]]
-      )[["p.value"]]
+      if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
+        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
+          1
+        } else {
+          0
+        }
+      } else {
+        wilcox.test(
+          groups_split[[x[1]]][[i]],
+          groups_split[[x[2]]][[i]]
+        )[["p.value"]]
+      }
     }
     res_utest <- lapply(
       (seq_len(ncol(Data_tmp) - 2) + 2),
@@ -604,7 +624,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Result <- cbind(Result, df_utest)
     print("U-test has finished")
 
-    ### finalization####
+    ### finalization ####
     Result <- as.matrix(Result)
 
     Names <- NULL
@@ -655,13 +675,22 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
   } else if (length(unique(Data_final$Group)) > 2) {
     groups_split <- split(Data_tmp, Data_tmp$Group)
 
-    #### ttest####
+    #### ttest ####
     split_t_test <- function(x, i) {
-      t.test(
-        groups_split[[x[1]]][[i]],
-        groups_split[[x[2]]][[i]]
-      )[["p.value"]]
+      if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
+        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
+          1
+        } else {
+          0
+        }
+      } else {
+        t.test(
+          groups_split[[x[1]]][[i]],
+          groups_split[[x[2]]][[i]]
+        )[["p.value"]]
+      }
     }
+
     res_ttest <- lapply(
       (seq_len(ncol(Data_tmp) - 2) + 2),
       function(i) as.list(combn(names(groups_split), 2, split_t_test, i = i))
@@ -670,12 +699,20 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Result <- df_ttest
     print("T-test has finished")
 
-    #### utest####
+    #### utest ####
     split_u_test <- function(x, i) {
-      wilcox.test(
-        groups_split[[x[1]]][[i]],
-        groups_split[[x[2]]][[i]]
-      )[["p.value"]]
+      if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
+        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
+          1
+        } else {
+          0
+        }
+      } else {
+        wilcox.test(
+          groups_split[[x[1]]][[i]],
+          groups_split[[x[2]]][[i]]
+        )[["p.value"]]
+      }
     }
     res_utest <- lapply(
       (seq_len(ncol(Data_tmp) - 2) + 2),
@@ -685,7 +722,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Result <- cbind(Result, df_utest)
     print("U-test has finished")
 
-    #### ANOVAPostHoc####
+    #### ANOVAPostHoc ####
     formula_anova <- lapply(colnames(Data_tmp)[3:ncol(Data_tmp)], function(x) as.formula(paste0(x, " ~ Group")))
     res_anova <- lapply(formula_anova, function(x) summary(aov(x, data = Data_tmp)))
     names(res_anova) <- format(formula_anova)
@@ -705,7 +742,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     print("Anova & PostHoc has finished")
 
 
-    #### KruskalWallisPostHoc####
+    #### KruskalWallisPostHoc ####
     formula_kw <- lapply(colnames(Data_tmp)[3:ncol(Data_tmp)], function(x) as.formula(paste0(x, " ~ Group")))
     res_kw <- lapply(formula_anova, function(x) kruskal.test(x, data = Data_tmp)[["p.value"]])
     names(res_kw) <- format(formula_kw)
@@ -724,7 +761,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
 
     print("Kruskal Wallis & PostHoc has finished")
 
-    #### finalization####
+    #### finalization ####
     Result <- as.matrix(Result)
 
     Names <- NULL
