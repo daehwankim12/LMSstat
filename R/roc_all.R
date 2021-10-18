@@ -8,8 +8,10 @@
 #'
 #' @examples
 #'
-#' D <- as.data.frame(cbind(paste0("sample_", 1:26), c(rep(1, 13), rep(0, 13)),
-#'                    c(rep("2", 7), rep("3", 12), rep("4", 7)), runif(26), runif(26)))
+#' D <- as.data.frame(cbind(
+#'   paste0("sample_", 1:26), c(rep(1, 13), rep(0, 13)),
+#'   c(rep("2", 7), rep("3", 12), rep("4", 7)), runif(26), runif(26)
+#' ))
 #' Datas <- rbind(c("Sample", "Group", "Covariate", "some metabolite1", "some metabolite2"), D)
 #' roc_all(Datas)
 roc_all <- function(data, cov = T) {

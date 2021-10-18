@@ -23,8 +23,10 @@
 #'
 #' @examples data(Data)
 #' Test <- Allstats(Data)
-#' AS_dotplot(Test, asterisk = "Dunn", significant_variable_only = F,
-#'            color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099"))
+#' AS_dotplot(Test,
+#'   asterisk = "Dunn", significant_variable_only = F,
+#'   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
+#' )
 AS_dotplot <- function(data,
                        asterisk = "t_test",
                        significant_variable_only = F,

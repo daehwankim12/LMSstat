@@ -4,49 +4,12 @@
 \name{LMSstat-package}
 \alias{LMSstat}
 \alias{LMSstat-package}
-\title{LMSstat: automation of statistical tests with an identical data input.}
+\title{LMSstat: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT.}
 \description{
-Automation of statistical tests with an identical data input.
-  The package Includes most Statistical tests used in metabolomics,
-  aiming to reduce arduous work searching for packages and changing data input.
-
-The package includes
-
-* Simple Statistics :u-test, t-test, post hocs of Anova and Kruskal Wallis with FDR adjusted values
-
-* Bar, Box, Dot plots with significance (u-test, t-test, post hocs of Anova and Kruskal Wallis)
-
-* Scaling
-
-* Heatmap
-
-* Shapiro test
-
-* PERMANOVA
-
-* ROC and AROC
-
-* NMDS
-
-* PCA
-
-* PCoA
-
-* Volcano
-
-* SRH
-}
-\details{
-\tabular{ll}{
-Package: \tab LMSstat\cr
-Type: \tab Package\cr
-Version: \tab 1.0.10\cr
-Date: \tab 2021-08-23\cr
-License: \tab MIT License\cr
-}
+Automation of statistical tests with an identical data input. The package Includes most Statistical tests used in metabolomics, aiming to reduce arduous work searching for packages and changing data input.
 }
 \author{
-\strong{Maintainer}: Chang-Ho Kim \email{demizor3@gmail.com}
+\strong{Maintainer}: CHANG-HO KIM \email{demizor3@gmail.com}
 
 }
 \keyword{internal}
