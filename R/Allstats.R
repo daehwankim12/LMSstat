@@ -577,11 +577,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     #### ttest ####
     split_t_test <- function(x, i) {
       if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
-        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
-          1
-        } else {
-          0
-        }
+        1
       } else {
         t.test(
           groups_split[[x[1]]][[i]],
@@ -607,7 +603,10 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
           1
         } else {
-          0
+          wilcox.test(
+            groups_split[[x[1]]][[i]],
+            groups_split[[x[2]]][[i]]
+          )[["p.value"]]
         }
       } else {
         wilcox.test(
@@ -678,11 +677,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     #### ttest ####
     split_t_test <- function(x, i) {
       if (var(groups_split[[x[1]]][[i]]) == 0 & var(groups_split[[x[2]]][[i]]) == 0) {
-        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
-          1
-        } else {
-          0
-        }
+        1
       } else {
         t.test(
           groups_split[[x[1]]][[i]],
@@ -705,7 +700,10 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
           1
         } else {
-          0
+          wilcox.test(
+            groups_split[[x[1]]][[i]],
+            groups_split[[x[2]]][[i]]
+          )[["p.value"]]
         }
       } else {
         wilcox.test(
