@@ -46,6 +46,5 @@ Automatically save NMDS plots for the selected dimension metrics
 }
 \examples{
 data(Data)
-NMDS(Data,methods = c("euclidian","manhattan","bray"))
-
+NMDS(Data, methods = c("euclidian", "manhattan", "bray"))
 }

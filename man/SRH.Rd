@@ -21,5 +21,5 @@ Computes Scheirer-Ray-Hare Test
 }
 \examples{
 data(Data)
-Result<-SRH(Data)
+Result <- SRH(Data)
 }

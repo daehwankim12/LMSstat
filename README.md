@@ -253,8 +253,6 @@ Volcano(Test, asterisk = "t-test")
 scaled_data <- D_tran(Data, param = "Auto")
 
 AS_heatmap(scaled_data) #data inheriting from D_tran
-
-dev.off() # Saved as PDF
 ```
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/126421942-247031e1-9f90-452f-b5bd-fdf5bdf5c058.PNG" width="750" height="400">

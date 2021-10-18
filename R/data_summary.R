@@ -4,8 +4,6 @@
 #'
 #' @return summarized matrix with SEM and mean for Barplot
 #' @export
-#'
-#' @examples
 data_summary <- function(data, varname, groupnames) {
   summary_func <- function(x, col) {
     c(

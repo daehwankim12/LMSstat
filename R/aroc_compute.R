@@ -4,8 +4,6 @@
 #'
 #' @return compute.threshold.YI.AROC.sp with sensitivity and specificity
 #' @export
-#'
-#' @examples
 aroc_compute <- function(object, newdata, parallel = c("no", "multicore", "snow"),
                          ncpus = 1, cl = NULL) {
   if (class(object)[1] != "AROC.sp") {

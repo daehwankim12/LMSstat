@@ -64,6 +64,6 @@ Volcano plot for every group comparison
 }
 \examples{
 data(Data)
-Test<-Allstats(Data)
-Volcano(Test,asterisk = "t-test")
+Test <- Allstats(Data)
+Volcano(Test, asterisk = "t-test")
 }

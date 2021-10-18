@@ -10,20 +10,7 @@
 #' @examples data(Data)
 #' Result <- SRH(Data)
 SRH <- function(data, Adjust_p_value = T, Adjust_method = "BH") {
-  LETTERS702 <- c(sapply(LETTERS, function(x) paste0(x, LETTERS)))
-  LETTERS37232 <- c(LETTERS, LETTERS702, sapply(LETTERS, function(x) {
-    paste0(
-      x,
-      LETTERS702
-    )
-  }))
-  LETTERS210729 <- c(LETTERS, LETTERS702, LETTERS37232, sapply(
-    LETTERS,
-    function(x) paste0(x, LETTERS37232)
-  ))
-  LETTERS210729 <- LETTERS210729[-365]
-  LETTERS210729 <- LETTERS210729[-10205]
-  LETTERS210729 <- LETTERS210729[-267101]
+  LETTERS210729 <- paste0("V", 1:500000)
   colnames(data) <- data[1, ]
   data <- data[-1, ]
   df <- as.data.frame(matrix(data = NA, ncol = 3, nrow = (ncol(data) - 3)))
