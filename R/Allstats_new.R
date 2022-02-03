@@ -13,7 +13,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
   LETTERS210729 <- paste0("V", 1:500000)
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]
-  Data <- Data %>% dplyr::arrange(Group)
+  Data <- Data %>% dplyr::arrange(Data$Group)
   Data_renamed <- Data
   nmet <- ncol(Data) - 2
   colnames(Data_renamed) <- c(colnames(Data[1:2]), LETTERS210729[1:nmet])
