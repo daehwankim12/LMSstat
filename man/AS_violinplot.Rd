@@ -71,5 +71,8 @@ Automatically save violinplots for all metabolites including asterisks for signi
 \examples{
 data(Data)
 Test <- Allstats(Data)
-AS_violinplot(Test, asterisk = "Dunn", significant_variable_only = F, color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099"))
+AS_violinplot(Test,
+  asterisk = "Dunn", significant_variable_only = F,
+  color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
+)
 }

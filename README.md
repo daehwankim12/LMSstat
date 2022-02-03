@@ -342,7 +342,7 @@ NMDS(Data, methods = c("manhattan", "bray", "euclidean"))
 #### PCA
 ```
 # Makes a subdirectory and saves PCA plot
-PCA(Data, components = c(1, 2), legend_position = "none"))
+PCA(Data, components = c(1, 2), legend_position = "none")
 ```
 <p align="center">
 <img src=https://user-images.githubusercontent.com/77651662/126108588-cfe688c6-2c90-485d-a197-ef1eb7a82cb5.png width="600" height="500">

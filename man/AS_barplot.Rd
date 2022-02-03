@@ -66,10 +66,10 @@ ggbarplot
 Automatically save barplots for all metabolites including asterisks for significance.
 }
 \examples{
-data(Data)
+data("Data")
 Test <- Allstats(Data)
 AS_barplot(Test,
-  asterisk = "Dunn", significant_variable_only = F,
+  asterisk = "Dunn", significant_variable_only = FALSE,
   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
 )
 }

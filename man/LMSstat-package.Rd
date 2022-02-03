@@ -4,7 +4,7 @@
 \name{LMSstat-package}
 \alias{LMSstat}
 \alias{LMSstat-package}
-\title{LMSstat: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT.}
+\title{LMSstat: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT}
 \description{
 Automation of statistical tests with an identical data input. The package Includes most Statistical tests used in metabolomics, aiming to reduce arduous work searching for packages and changing data input.
 }

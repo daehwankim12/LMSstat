@@ -12,7 +12,7 @@
 D_tran <- function(data, param = "None", save = F) {
   colnames(data) <- data[1, ]
   data <- data[-1, -2]
-  data <- data %>% dplyr::arrange(Group)
+  data <- data %>% dplyr::arrange(data$Group)
   rownames(data) <- data[, 1]
   data <- data[, -1]
   data[, 2:ncol(data)] <- sapply(data[, 2:ncol(data)], function(x) as.numeric(x))

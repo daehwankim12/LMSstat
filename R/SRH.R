@@ -59,7 +59,7 @@ SRH <- function(data, Adjust_p_value = T, Adjust_method = "BH") {
   print("Started to print Venn_diagram")
   VennDiagram::venn.diagram(list(rownames(ML_sig), rownames(G_sig), rownames(Int_sig)),
     category.names = c("Multilevel", "Group", "Interaction"),
-    filename = "Significant_variable_venndiagram.jpg",
+    filename = "Significant_variable_venndiagram.tiff",
     resolution = 1200,
     col = c("#440154ff", "#21908dff", "#fde725ff"),
     fill = c(ggplot2::alpha("#440154ff", 0.3), ggplot2::alpha("#21908dff", 0.3), ggplot2::alpha("#fde725ff", 0.3)),

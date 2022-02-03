@@ -7,13 +7,14 @@
 #' @return List including Result Matrix of p-values, converted datas.
 #' @export
 #'
-#' @examples data(Data)
+#' @examples
+#' data("Data")
 #' Result <- Allstats(Data)
 Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
   LETTERS210729 <- paste0("V", 1:500000)
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]
-  Data <- Data %>% dplyr::arrange(Group)
+  Data <- Data %>% dplyr::arrange(Data$Group)
   Data_renamed <- Data
   nmet <- ncol(Data) - 2
   colnames(Data_renamed) <- c(colnames(Data[1:2]), LETTERS210729[1:nmet])
@@ -26,7 +27,7 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       for (Gnum in 1:length(unique(Data$Group))) {
         assign(paste("Data", unique(Data$Group)[Gnum],
           sep = "_"
-        ), dplyr::filter(Data_final, Group ==
+        ), dplyr::filter(Data_final, Data_final$Group ==
           unique(Data_final$Group)[Gnum]))
       }
       Result <- matrix(data = NA, nrow = (ncol(Data_final) -
@@ -205,7 +206,7 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       for (Gnum in 1:length(unique(Data$Group))) {
         assign(paste("Data", unique(Data$Group)[Gnum],
           sep = "_"
-        ), filter(Data_final, Group ==
+        ), filter(Data_final, Data_final$Group ==
           unique(Data_final$Group)[Gnum]))
       }
       Result <- matrix(data = NA, nrow = (ncol(Data_final) -
