@@ -283,7 +283,7 @@ AS_violinplot <- function(data,
             stat.test[, 1],
             " - ", stat.test[, 2]
           )
-        } else if (asterisk == " Scheffe") {
+        } else if (asterisk == "Scheffe") {
           rownames(stat.test) <- paste0(
             stat.test[, 2],
             "-", stat.test[, 1]

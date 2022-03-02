@@ -116,7 +116,7 @@ AS_dotplot <- function(data,
         stat.test[, 1:2] <- Comb
         if (asterisk == "Dunn") {
           rownames(stat.test) <- paste0(stat.test[, 1], " - ", stat.test[, 2])
-        } else if (asterisk == " Scheffe") {
+        } else if (asterisk == "Scheffe") {
           rownames(stat.test) <- paste0(stat.test[, 2], "-", stat.test[, 1])
         } else {
           rownames(stat.test) <- paste0(stat.test[, 1], "-", stat.test[, 2])
@@ -284,7 +284,7 @@ AS_dotplot <- function(data,
             stat.test[, 1],
             " - ", stat.test[, 2]
           )
-        } else if (asterisk == " Scheffe") {
+        } else if (asterisk == "Scheffe") {
           rownames(stat.test) <- paste0(
             stat.test[, 2],
             "-", stat.test[, 1]
