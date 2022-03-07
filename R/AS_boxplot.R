@@ -19,6 +19,7 @@
 #' @param size outline size
 #' @param sig_int significance parameter
 #'
+#' @importFrom foreach %dopar%
 #' @return ggboxplot
 #' @export
 #'
@@ -90,9 +91,10 @@ AS_boxplot <- function(data,
       }
     }    }
   ### Plots###
+  doParallel::registerDoParallel(cores = parallel::detectCores() - 2)
   suppressWarnings(
     if (length(unique(data[["Data_renamed"]][["Group"]])) != 2) {
-      for (number in 1:nrow(p_val_data)) {
+      foreach::foreach(number = 1:nrow(p_val_data)) %dopar% {
         if (number == round(nrow(p_val_data) / 4)) {
           print("25% complete")
         }
@@ -248,7 +250,7 @@ AS_boxplot <- function(data,
         colnames(p_val_data) <- colnames(data[["Result"]])[2]
       }
 
-      for (number in 1:nrow(p_val_data)) {
+      foreach::foreach(number = 1:nrow(p_val_data)) %dopar% {
         if (number == round(nrow(p_val_data) / 4)) {
           print("25% complete")
         }

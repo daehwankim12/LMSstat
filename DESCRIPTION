@@ -37,8 +37,10 @@ Imports:
     ape,
     VennDiagram,
     rcompanion,
-    data.table
+    data.table,
+    doParallel
 Depends:
     plyr,
-    dplyr
+    dplyr,
+    foreach
 Remotes: jpshanno/ecoflux

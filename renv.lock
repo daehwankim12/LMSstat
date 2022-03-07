@@ -54,6 +54,17 @@
         "snow"
       ]
     },
+    "BiocVersion": {
+      "Package": "BiocVersion",
+      "Version": "3.14.0",
+      "Source": "Bioconductor",
+      "git_url": "https://git.bioconductor.org/packages/BiocVersion",
+      "git_branch": "master",
+      "git_last_commit": "aa56d93",
+      "git_last_commit_date": "2021-05-19",
+      "Hash": "e57437f82a5c13263a9cf442b9796ba3",
+      "Requirements": []
+    },
     "ComplexHeatmap": {
       "Package": "ComplexHeatmap",
       "Version": "2.10.0",
@@ -332,10 +343,10 @@
     },
     "ape": {
       "Package": "ape",
-      "Version": "5.6-1",
+      "Version": "5.6-2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "2402767aec99bce0a877240e226446b6",
+      "Hash": "894108412a7ec23d5de85cdcce871c8b",
       "Requirements": [
         "Rcpp",
         "lattice",
@@ -1714,10 +1725,10 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "1.4.6",
+      "Version": "2.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "69fdf291af288f32fd4cd93315084ea8",
+      "Hash": "cf4329aac12c2c44089974559c18e446",
       "Requirements": [
         "askpass"
       ]
@@ -2049,10 +2060,10 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "0.15.3",
+      "Version": "0.15.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "318c703b833089e1bc0c6a198362ca19",
+      "Hash": "c1078316e1d4f70275fc1ea60c0bc431",
       "Requirements": []
     },
     "reprex": {
@@ -2104,11 +2115,12 @@
     },
     "rmarkdown": {
       "Package": "rmarkdown",
-      "Version": "2.11",
+      "Version": "2.12",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "320017b52d05a943981272b295750388",
+      "Hash": "354da5088ddfdffb73c11cc952885d88",
       "Requirements": [
+        "bslib",
         "evaluate",
         "htmltools",
         "jquerylib",
@@ -2433,10 +2445,10 @@
     },
     "survival": {
       "Package": "survival",
-      "Version": "3.2-13",
+      "Version": "3.3-1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6f0a0fadc63bc6570fe172770f15bbc4",
+      "Hash": "f6189c70451d3d68e0d571235576e833",
       "Requirements": [
         "Matrix"
       ]
@@ -2697,18 +2709,18 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "2.4.3",
+      "Version": "2.5.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a376b424c4817cda4920bbbeb3364e85",
+      "Hash": "c0e49a9760983e81e55cdd9be92e7182",
       "Requirements": []
     },
     "xfun": {
       "Package": "xfun",
-      "Version": "0.29",
+      "Version": "0.30",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e2e5fb1a74fbb68b27d6efc5372635dc",
+      "Hash": "e83f48136b041845e50a6658feffb197",
       "Requirements": []
     },
     "xml2": {
