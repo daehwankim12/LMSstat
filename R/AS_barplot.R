@@ -423,4 +423,5 @@ AS_barplot <- function(data,
       }
     }
   )
+  doParallel::stopImplicitCluster()
 }

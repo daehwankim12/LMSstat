@@ -423,4 +423,5 @@ AS_dotplot <- function(data,
       }
     }
   )
+  doParallel::stopImplicitCluster()
 }

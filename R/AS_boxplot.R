@@ -417,4 +417,5 @@ AS_boxplot <- function(data,
       }
     }
   )
+  doParallel::stopImplicitCluster()
 }

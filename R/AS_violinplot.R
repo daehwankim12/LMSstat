@@ -417,4 +417,5 @@ AS_violinplot <- function(data,
       }
     }
   )
+  doParallel::stopImplicitCluster()
 }
