@@ -91,13 +91,24 @@ AS_boxplot <- function(data,
       }
     }    }
   ### Plots###
-  cl <- parallel::makeCluster(parallel::detectCores() - 2)
+  group_not_two = length(unique(data[["Data_renamed"]][["Group"]])) != 2
+
+  num_core <- parallel::detectCores()
+  final_cores <- length(p_val_data) %/% 30 + 1
+  if (final_cores >= (num_core - 2)) {
+    final_cores <- num_core - 2
+  }
+  cl <- parallel::makeCluster(final_cores)
   doSNOW::registerDoSNOW(cl)
-  pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  if (group_not_two) {
+    pb <- txtProgressBar(max = nrow(p_val_data), style = 3)
+  } else {
+    pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  }
   progress <- function(n) setTxtProgressBar(pb, n)
   opts <- list(progress = progress)
   suppressWarnings(
-    if (length(unique(data[["Data_renamed"]][["Group"]])) != 2) {
+    if (group_not_two) {
       foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         stat.test <- as.data.frame(matrix(
           data = NA, nrow = nrow(Comb),
@@ -130,14 +141,14 @@ AS_boxplot <- function(data,
         stat.test <- stat.test[stat.test$p.adj.signif != "NS", ]
         if (length(stat.test > 4)) {
           ggpubr::ggboxplot(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            add = "jitter",
-            size = size,
-            order = order,
-            width = width
+                            x = "Group",
+                            y = colnames(data[["Data_renamed"]])[number],
+                            color = "Group",
+                            palette = ckey,
+                            add = "jitter",
+                            size = size,
+                            order = order,
+                            width = width
           ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
@@ -167,13 +178,13 @@ AS_boxplot <- function(data,
               legend.position = legend_position
             ) +
             ggpubr::stat_pvalue_manual(stat.test,
-              y.position = 1.05 * max(data[["Data_renamed"]][, number]),
-              step.increase = step_increase,
-              label.size = label_size,
-              tip.length = tip_length,
-              label = "p.adj.signif",
-              size = 3.5,
-              vjust = 0.05
+                                       y.position = 1.05 * max(data[["Data_renamed"]][, number]),
+                                       step.increase = step_increase,
+                                       label.size = label_size,
+                                       tip.length = tip_length,
+                                       label = "p.adj.signif",
+                                       size = 3.5,
+                                       vjust = 0.05
             )
           ggplot2::ggsave(
             filename = paste(NAMES[number], "boxplot.png", collapse = ""),
@@ -183,14 +194,14 @@ AS_boxplot <- function(data,
           )
         } else if (significant_variable_only == F) {
           ggpubr::ggboxplot(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
+                            x = "Group",
+                            y = colnames(data[["Data_renamed"]])[number],
+                            color = "Group",
+                            palette = ckey,
+                            size = size,
+                            add = "jitter",
+                            order = order,
+                            width = width
           ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
@@ -228,7 +239,7 @@ AS_boxplot <- function(data,
           )
         }
       }
-    } else if (length(unique(data[["Data_renamed"]][["Group"]])) == 2) {
+    } else {
       p_val_data <- as.data.frame(p_val_data)
       if (asterisk == "t_test") {
         colnames(p_val_data) <- colnames(data[["Result"]])[1]
@@ -238,8 +249,8 @@ AS_boxplot <- function(data,
 
       foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         df <- data_summary(data[["Data_renamed"]],
-          varname = colnames(data[["Data_renamed"]])[number],
-          groupnames = c("Group")
+                           varname = colnames(data[["Data_renamed"]])[number],
+                           groupnames = c("Group")
         )
         df <- df %>% plyr::mutate(ymax = len + SEM)
         colnames(df)[1] <- "Group"
@@ -284,17 +295,17 @@ AS_boxplot <- function(data,
           p <= sig_int[2] ~ "**"
         ))
         stat.test <- stat.test[stat.test$p.adj.signif !=
-          "NS", ]
+                                 "NS", ]
         if (length(stat.test > 4)) {
           ggpubr::ggboxplot(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
+                            x = "Group",
+                            y = colnames(data[["Data_renamed"]])[number],
+                            color = "Group",
+                            palette = ckey,
+                            size = size,
+                            add = "jitter",
+                            order = order,
+                            width = width
           ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
@@ -324,11 +335,11 @@ AS_boxplot <- function(data,
               legend.position = legend_position
             ) +
             ggpubr::stat_pvalue_manual(stat.test,
-              y.position = 1.05 * max(data[["Data_renamed"]][, number]), label = "p.adj.signif",
-              size = 3.5,
-              vjust = 0.05,
-              label.size = label_size,
-              tip.length = tip_length
+                                       y.position = 1.05 * max(data[["Data_renamed"]][, number]), label = "p.adj.signif",
+                                       size = 3.5,
+                                       vjust = 0.05,
+                                       label.size = label_size,
+                                       tip.length = tip_length
             )
           ggplot2::ggsave(
             filename = paste(NAMES[number], "boxplot.png", collapse = ""),
@@ -338,14 +349,14 @@ AS_boxplot <- function(data,
           )
         } else if (significant_variable_only == F) {
           ggpubr::ggboxplot(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
+                            x = "Group",
+                            y = colnames(data[["Data_renamed"]])[number],
+                            color = "Group",
+                            palette = ckey,
+                            size = size,
+                            add = "jitter",
+                            order = order,
+                            width = width
           ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +

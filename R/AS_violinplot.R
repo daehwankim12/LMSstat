@@ -50,7 +50,7 @@ AS_violinplot <- function(data,
   { # Summary
     ### Plot_data_prep###
     ifelse(!dir.exists(file.path(getwd(), "violinplot")), dir.create(file.path(getwd(), "violinplot")), FALSE)
-    data[["Data_renamed"]] <- data[["Data_renamed"]] %>% plyr::mutate(
+    data[["Data_renamed"]] <- data[["Data_renamed"]] %>% mutate(
       ZZZZ = data[["Data_renamed"]][, 2]
     )
     data[["Data_renamed"]] <- data[["Data_renamed"]][, c(-1, -2)]
@@ -91,13 +91,24 @@ AS_violinplot <- function(data,
       }
     }    }
   ### Plots###
-  cl <- parallel::makeCluster(parallel::detectCores() - 2)
+  group_not_two = length(unique(data[["Data_renamed"]][["Group"]])) != 2
+
+  num_core <- parallel::detectCores()
+  final_cores <- length(p_val_data) %/% 30 + 1
+  if (final_cores >= (num_core - 2)) {
+    final_cores <- num_core - 2
+  }
+  cl <- parallel::makeCluster(final_cores)
   doSNOW::registerDoSNOW(cl)
-  pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  if (group_not_two) {
+    pb <- txtProgressBar(max = nrow(p_val_data), style = 3)
+  } else {
+    pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  }
   progress <- function(n) setTxtProgressBar(pb, n)
   opts <- list(progress = progress)
   suppressWarnings(
-    if (length(unique(data[["Data_renamed"]][["Group"]])) != 2) {
+    if (group_not_two) {
       foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         stat.test <- as.data.frame(matrix(
           data = NA, nrow = nrow(Comb),
@@ -228,7 +239,7 @@ AS_violinplot <- function(data,
           )
         }
       }
-    } else if (length(unique(data[["Data_renamed"]][["Group"]])) == 2) {
+    } else {
       p_val_data <- as.data.frame(p_val_data)
       if (asterisk == "t_test") {
         colnames(p_val_data) <- colnames(data[["Result"]])[1]

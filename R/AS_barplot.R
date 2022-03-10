@@ -89,13 +89,24 @@ AS_barplot <- function(data,
       }
     }}
   ### Plots###
-  cl <- parallel::makeCluster(parallel::detectCores() - 2)
+  group_not_two = length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2
+
+  num_core <- parallel::detectCores()
+  final_cores <- length(p_val_data) %/% 30 + 1
+  if (final_cores >= (num_core - 2)) {
+    final_cores <- num_core - 2
+  }
+  cl <- parallel::makeCluster(final_cores)
   doSNOW::registerDoSNOW(cl)
-  pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  if (group_not_two) {
+    pb <- txtProgressBar(max = nrow(p_val_data), style = 3)
+  } else {
+    pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  }
   progress <- function(n) setTxtProgressBar(pb, n)
   opts <- list(progress = progress)
   suppressWarnings(
-    if (length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2) {
+    if (group_not_two) {
       foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         df <- data_summary(data[["Data_renamed"]],
           varname = colnames(data[["Data_renamed"]])[number],
@@ -232,7 +243,7 @@ AS_barplot <- function(data,
           )
         }
       }
-    } else if (length(unique(data[["Data_renamed"]][["ZZZZ"]])) == 2) {
+    } else {
       p_val_data <- as.data.frame(p_val_data)
       if (asterisk == "t_test") {
         colnames(p_val_data) <- colnames(data[["Result"]])[1]
