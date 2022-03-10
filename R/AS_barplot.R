@@ -89,28 +89,14 @@ AS_barplot <- function(data,
       }
     }}
   ### Plots###
-  doParallel::registerDoParallel(cores = parallel::detectCores() - 2)
+  cl <- parallel::makeCluster(parallel::detectCores() - 2)
+  doSNOW::registerDoSNOW(cl)
+  pb <- txtProgressBar(max = length(p_val_data), style = 3)
+  progress <- function(n) setTxtProgressBar(pb, n)
+  opts <- list(progress = progress)
   suppressWarnings(
     if (length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2) {
-      foreach::foreach(number = 1:nrow(p_val_data)) %dopar% {
-        if (number == round(nrow(p_val_data) / 4)) {
-          print("25% complete")
-        }
-        if (number == round(nrow(p_val_data) / 3)) {
-          print("33% complete")
-        }
-        if (number == round(nrow(p_val_data) / 2)) {
-          print("50% complete")
-        }
-        if (number == round(2 * nrow(p_val_data) / 3)) {
-          print("66% complete")
-        }
-        if (number == round(3 * nrow(p_val_data) / 4)) {
-          print("75% complete")
-        }
-        if (number == nrow(p_val_data)) {
-          print("100% complete")
-        }
+      foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         df <- data_summary(data[["Data_renamed"]],
           varname = colnames(data[["Data_renamed"]])[number],
           groupnames = c("ZZZZ")
@@ -253,26 +239,7 @@ AS_barplot <- function(data,
       } else if (asterisk == "u_test") {
         colnames(p_val_data) <- colnames(data[["Result"]])[2]
       }
-      foreach::foreach(number = 1:nrow(p_val_data)) %dopar% {
-        if (number == round(nrow(p_val_data) / 4)) {
-          print("25% complete")
-        }
-        if (number == round(nrow(p_val_data) / 3)) {
-          print("33% complete")
-        }
-        if (number == round(nrow(p_val_data) / 2)) {
-          print("50% complete")
-        }
-        if (number == round(2 * nrow(p_val_data) / 3)) {
-          print("66% complete")
-        }
-        if (number == round(3 * nrow(p_val_data) / 4)) {
-          print("75% complete")
-        }
-        if (number == nrow(p_val_data)) {
-          print("100% complete")
-        }
-
+      foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
         df <- data_summary(data[["Data_renamed"]],
           varname = colnames(data[["Data_renamed"]])[number],
           groupnames = c("ZZZZ")
@@ -423,5 +390,6 @@ AS_barplot <- function(data,
       }
     }
   )
-  doParallel::stopImplicitCluster()
+  close(pb)
+  parallel::stopCluster(cl)
 }

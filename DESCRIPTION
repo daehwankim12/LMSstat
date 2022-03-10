@@ -38,7 +38,8 @@ Imports:
     VennDiagram,
     rcompanion,
     data.table,
-    doParallel
+    doParallel,
+    doSNOW
 Depends:
     plyr,
     dplyr,
