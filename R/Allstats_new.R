@@ -85,16 +85,16 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Names <- NULL
     for (i in 1:choose(length(groups_split), 2)) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-        combn(names(groups_split), 2)[2, i],
-        sep = "-"
+                                  combn(names(groups_split), 2)[2, i],
+                                  sep = "-"
       ))
     }
 
     rownames(Result) <- colnames(Data)[3:(ncol(Data_final))]
     colnames(Result) <- c(paste(Names, "t-test",
-      sep = "___"
+                                sep = "___"
     ), paste(Names, "u-test",
-      sep = "___"
+             sep = "___"
     ))
     if (Adjust_p_value == T) {
       print("###########################################")
@@ -206,9 +206,10 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Result <- cbind(Result, df_kw)
 
     kwpost_name <- lapply(colnames(Data_tmp)[3:ncol(Data_tmp)], function(x) as.formula(paste0(x, " ~ Group")))
-    res_kwpost <- lapply(kwpost_name, function(x) FSA::dunnTest(x, data = Data_tmp1, method = "bh"))
+    res_kwpost <- lapply(kwpost_name, function(x) FSA::dunnTest(x, data = Data_tmp1, method = "none"))
     names(res_kwpost) <- format(kwpost_name)
-    post_kw <- lapply(res_kwpost, function(x) x[["res"]][["P.adj"]])
+    post_kw <- lapply(res_kwpost, function(x) x[["res"]][["P.unadj"]])
+    post_kw <- lapply(post_kw, function(x) p.adjust(x, method = "BH"))
 
     df_kw_post <- t(data.table::data.table(data.frame(post_kw)))
     Result <- cbind(Result, df_kw_post)
@@ -221,8 +222,8 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Names <- NULL
     for (i in 1:choose(length(groups_split), 2)) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-        combn(names(groups_split), 2)[2, i],
-        sep = "-"
+                                  combn(names(groups_split), 2)[2, i],
+                                  sep = "-"
       ))
     }
 
@@ -232,15 +233,15 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     rownames(Result) <- colnames(Data)[3:(ncol(Data_final))]
     colnames(Result) <- c(
       paste(Names[, 1], "t-test",
-        sep = "___"
+            sep = "___"
       ), paste(Names[, 1], "u-test",
-        sep = "___"
+               sep = "___"
       ), "Anova", paste(AN_Post_names,
-        "ANO_posthoc",
-        sep = "___"
+                        "ANO_posthoc",
+                        sep = "___"
       ), "Kruskal_Wallis",
       paste(DU_post_names, "Kru_posthoc(Dunn)",
-        sep = "___"
+            sep = "___"
       )
     )
     if (Adjust_p_value == T) {
@@ -283,12 +284,12 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-      1)]
+              1)]
     Result_Kru <- as.data.frame(Result[, (3 * choose(
       length(unique(Data$Group)),
       2
     ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-      2)])
+              2)])
     colnames(Result_Kru) <- colnames(Result)[(3 * choose(
       length(unique(Data$Group)),
       2
@@ -297,7 +298,7 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
-      2)]
+              2)]
     print("subsets have been made")
     Final <- list()
     Final$Data <- Data
