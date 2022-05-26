@@ -89,7 +89,7 @@ AS_barplot <- function(data,
       }
     }}
   ### Plots###
-  group_not_two = length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2
+  group_not_two <- length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2
 
   num_core <- parallel::detectCores()
   final_cores <- length(p_val_data) %/% 30 + 1

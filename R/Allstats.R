@@ -333,7 +333,7 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         Out <- tryCatch(
           {
             Ano_In <- aov(eval(parse(text = LETTERS210729[met])) ~
-            Group, data = Data_final)
+              Group, data = Data_final)
             summary(Ano_In)[[1]][["Pr(>F)"]][1]
           },
           error = function(cond) {
@@ -360,7 +360,7 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         assign(paste(LETTERS210729[met], "Anova_Post_Hoc",
           sep = "_"
         ), DescTools::PostHocTest(aov(eval(parse(text = LETTERS210729[met])) ~
-        Group, data = Data_final), method = "scheffe"))
+          Group, data = Data_final), method = "scheffe"))
       }
       for (Ano_numb in 1:nrow(eval(parse(text = paste(LETTERS210729[met],
         "Anova_Post_Hoc",
@@ -386,7 +386,7 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         Out <- tryCatch(
           {
             Kru_In <- kruskal.test(eval(parse(text = LETTERS210729[met])) ~
-            Group, data = Data_final)
+              Group, data = Data_final)
             Kru_In[["p.value"]]
           },
           error = function(cond) {
@@ -413,7 +413,11 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         assign(paste(LETTERS210729[met], "Dunn_Post_Hoc",
           sep = "_"
         ), FSA::dunnTest(eval(parse(text = LETTERS210729[met])) ~
-        Group, data = Data_final, method = "bh"))
+          Group, data = Data_final, method = "none"))
+        eval(parse(text = paste0(paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
+                                 "$res$P.adj <- p.adjust(",
+                                 paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
+                                 "$res$P.adj, method = 'BH')")))
       }
       for (Kru_numb in 1:length(eval(parse(text = paste(LETTERS210729[met],
         "Dunn_Post_Hoc",

@@ -206,9 +206,10 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Result <- cbind(Result, df_kw)
 
     kwpost_name <- lapply(colnames(Data_tmp)[3:ncol(Data_tmp)], function(x) as.formula(paste0(x, " ~ Group")))
-    res_kwpost <- lapply(kwpost_name, function(x) FSA::dunnTest(x, data = Data_tmp1, method = "bh"))
+    res_kwpost <- lapply(kwpost_name, function(x) FSA::dunnTest(x, data = Data_tmp1, method = "none"))
     names(res_kwpost) <- format(kwpost_name)
-    post_kw <- lapply(res_kwpost, function(x) x[["res"]][["P.adj"]])
+    post_kw <- lapply(res_kwpost, function(x) x[["res"]][["P.unadj"]])
+    post_kw <- lapply(post_kw, function(x) p.adjust(x, method = "BH"))
 
     df_kw_post <- t(data.table::data.table(data.frame(post_kw)))
     Result <- cbind(Result, df_kw_post)

@@ -49,6 +49,10 @@ install.packages("devtools")
 
 devtools::install_github("CHKim5/LMSstat")
 
+devtools::install_github("daehwankim12/LMSstat")
+
+devtools::install_github("daehwankim12/LMSstat", ref = "develop")
+
 library(LMSstat)
 ```
 
