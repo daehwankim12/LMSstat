@@ -414,10 +414,12 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
           sep = "_"
         ), FSA::dunnTest(eval(parse(text = LETTERS210729[met])) ~
           Group, data = Data_final, method = "none"))
-        eval(parse(text = paste0(paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
-                                 "$res$P.adj <- p.adjust(",
-                                 paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
-                                 "$res$P.adj, method = 'BH')")))
+        eval(parse(text = paste0(
+          paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
+          "$res$P.adj <- p.adjust(",
+          paste(LETTERS210729[met], "Dunn_Post_Hoc", sep = "_"),
+          "$res$P.adj, method = 'BH')"
+        )))
       }
       for (Kru_numb in 1:length(eval(parse(text = paste(LETTERS210729[met],
         "Dunn_Post_Hoc",
@@ -483,6 +485,17 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
           sep = "___"
         )
       )
+      Result_Ano_P <- Result[, (2 * choose(
+        length(unique(Data$Group)),
+        2
+      ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
+        1)]
+      Result_Kru_P <- Result[, (3 * choose(
+        length(unique(Data$Group)),
+        2
+      ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
+        2)]
+
       if (Adjust_p_value == T) {
         print("###########################################")
         print(paste0(
@@ -501,10 +514,13 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       rm(list = setdiff(ls(), c(
         "Data_renamed", "Data",
         "Result", "LETTERS210729", "event",
-        "P_hoc", "Colors", "significant_variable_only"
+        "P_hoc", "Colors", "significant_variable_only", "Result_Ano_P", "Result_Kru_P"
       )))
       print("statistical test has finished")
     })
+
+    Result[, (2 * choose(length(unique(Data$Group)), 2) + 2):(3 * choose(length(unique(Data$Group)), 2) + 1)] <- Result_Ano_P
+    Result[, (3 * choose(length(unique(Data$Group)), 2) + 3):(4 * choose(length(unique(Data$Group)), 2) + 2)] <- Result_Kru_P
     Result_T <- Result[, 1:choose(
       length(unique(Data$Group)),
       2
@@ -522,11 +538,6 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 1)]
-    Result_Ano_P <- Result[, (2 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-      1)]
     Result_Kru <- as.data.frame(Result[, (3 * choose(
       length(unique(Data$Group)),
       2
@@ -536,11 +547,6 @@ Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 2)]
-    Result_Kru_P <- Result[, (3 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
-      2)]
     print("subsets have been made")
     Final <- list()
     Final$Data <- Data

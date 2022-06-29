@@ -244,6 +244,18 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
         sep = "___"
       )
     )
+
+    Result_Ano_P <- Result[, (2 * choose(
+      length(unique(Data$Group)),
+      2
+    ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
+      1)]
+    Result_Kru_P <- Result[, (3 * choose(
+      length(unique(Data$Group)),
+      2
+    ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
+      2)]
+
     if (Adjust_p_value == T) {
       print("###########################################")
       print(paste0(
@@ -262,10 +274,12 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     rm(list = setdiff(ls(), c(
       "Data_renamed", "Data",
       "Result", "LETTERS210729", "event",
-      "P_hoc", "Colors", "significant_variable_only"
+      "P_hoc", "Colors", "significant_variable_only", "Result_Ano_P", "Result_Kru_P"
     )))
     print("statistical test has finished")
 
+    Result[, (2 * choose(length(unique(Data$Group)), 2) + 2):(3 * choose(length(unique(Data$Group)), 2) + 1)] <- Result_Ano_P
+    Result[, (3 * choose(length(unique(Data$Group)), 2) + 3):(4 * choose(length(unique(Data$Group)), 2) + 2)] <- Result_Kru_P
 
     Result_T <- Result[, 1:choose(
       length(unique(Data$Group)),
@@ -280,11 +294,6 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 1)]
-    Result_Ano_P <- Result[, (2 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-      1)]
     Result_Kru <- as.data.frame(Result[, (3 * choose(
       length(unique(Data$Group)),
       2
@@ -294,11 +303,6 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 2)]
-    Result_Kru_P <- Result[, (3 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
-      2)]
     print("subsets have been made")
     Final <- list()
     Final$Data <- Data
