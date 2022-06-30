@@ -85,16 +85,16 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Names <- NULL
     for (i in 1:choose(length(groups_split), 2)) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-                                  combn(names(groups_split), 2)[2, i],
-                                  sep = "-"
+        combn(names(groups_split), 2)[2, i],
+        sep = "-"
       ))
     }
 
     rownames(Result) <- colnames(Data)[3:(ncol(Data_final))]
     colnames(Result) <- c(paste(Names, "t-test",
-                                sep = "___"
+      sep = "___"
     ), paste(Names, "u-test",
-             sep = "___"
+      sep = "___"
     ))
     if (Adjust_p_value == T) {
       print("###########################################")
@@ -222,8 +222,8 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     Names <- NULL
     for (i in 1:choose(length(groups_split), 2)) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-                                  combn(names(groups_split), 2)[2, i],
-                                  sep = "-"
+        combn(names(groups_split), 2)[2, i],
+        sep = "-"
       ))
     }
 
@@ -233,17 +233,29 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     rownames(Result) <- colnames(Data)[3:(ncol(Data_final))]
     colnames(Result) <- c(
       paste(Names[, 1], "t-test",
-            sep = "___"
+        sep = "___"
       ), paste(Names[, 1], "u-test",
-               sep = "___"
+        sep = "___"
       ), "Anova", paste(AN_Post_names,
-                        "ANO_posthoc",
-                        sep = "___"
+        "ANO_posthoc",
+        sep = "___"
       ), "Kruskal_Wallis",
       paste(DU_post_names, "Kru_posthoc(Dunn)",
-            sep = "___"
+        sep = "___"
       )
     )
+
+    Result_Ano_P <- Result[, (2 * choose(
+      length(unique(Data$Group)),
+      2
+    ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
+      1)]
+    Result_Kru_P <- Result[, (3 * choose(
+      length(unique(Data$Group)),
+      2
+    ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
+      2)]
+
     if (Adjust_p_value == T) {
       print("###########################################")
       print(paste0(
@@ -262,10 +274,12 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
     rm(list = setdiff(ls(), c(
       "Data_renamed", "Data",
       "Result", "LETTERS210729", "event",
-      "P_hoc", "Colors", "significant_variable_only"
+      "P_hoc", "Colors", "significant_variable_only", "Result_Ano_P", "Result_Kru_P"
     )))
     print("statistical test has finished")
 
+    Result[, (2 * choose(length(unique(Data$Group)), 2) + 2):(3 * choose(length(unique(Data$Group)), 2) + 1)] <- Result_Ano_P
+    Result[, (3 * choose(length(unique(Data$Group)), 2) + 3):(4 * choose(length(unique(Data$Group)), 2) + 2)] <- Result_Kru_P
 
     Result_T <- Result[, 1:choose(
       length(unique(Data$Group)),
@@ -280,25 +294,15 @@ Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
       length(unique(Data$Group)),
       2
     ) + 1)]
-    Result_Ano_P <- Result[, (2 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-              1)]
     Result_Kru <- as.data.frame(Result[, (3 * choose(
       length(unique(Data$Group)),
       2
     ) + 2):(3 * choose(length(unique(Data$Group)), 2) +
-              2)])
+      2)])
     colnames(Result_Kru) <- colnames(Result)[(3 * choose(
       length(unique(Data$Group)),
       2
     ) + 2)]
-    Result_Kru_P <- Result[, (3 * choose(
-      length(unique(Data$Group)),
-      2
-    ) + 3):(4 * choose(length(unique(Data$Group)), 2) +
-              2)]
     print("subsets have been made")
     Final <- list()
     Final$Data <- Data
