@@ -92,309 +92,314 @@ AS_violinplot <- function(data,
     }    }
   ### Plots###
   group_not_two <- length(unique(data[["Data_renamed"]][["Group"]])) != 2
+  tryCatch(
+    expr = {
+      num_core <- parallel::detectCores()
+      final_cores <- length(p_val_data) %/% 30 + 1
+      if (final_cores >= (num_core - 2)) {
+        final_cores <- num_core - 2
+      }
+      cl <- parallel::makeCluster(final_cores)
+      doSNOW::registerDoSNOW(cl)
+      if (group_not_two) {
+        pb <- txtProgressBar(max = nrow(p_val_data), style = 3)
+      } else {
+        pb <- txtProgressBar(max = length(p_val_data), style = 3)
+      }
+      progress <- function(n) setTxtProgressBar(pb, n)
+      opts <- list(progress = progress)
+      suppressWarnings(
+        if (group_not_two) {
+          foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
+            stat.test <- as.data.frame(matrix(
+              data = NA, nrow = nrow(Comb),
+              ncol = 2
+            ))
+            stat.test[, 1:2] <- Comb
+            if (asterisk == "Dunn") {
+              rownames(stat.test) <- paste0(stat.test[, 1], " - ", stat.test[, 2])
+            } else if (asterisk == "Scheffe") {
+              rownames(stat.test) <- paste0(stat.test[, 2], "-", stat.test[, 1])
+            } else {
+              rownames(stat.test) <- paste0(stat.test[, 1], "-", stat.test[, 2])
+            }
+            colnames(p_val_data) <- as.data.frame(strsplit(colnames(p_val_data), "___"))[1, ]
+            t1 <- as.data.frame(t(as.data.frame(p_val_data)[number, ]))
+            t2 <- stat.test
+            t3 <- merge(t2, t1, by = 0)
+            stat.test <- t3[, 2:4]
+            colnames(stat.test) <- c(
+              "group1", "group2",
+              "p"
+            )
+            stat.test <- stat.test %>% plyr::mutate(
+              p.adj.signif = case_when(
+                p >
+                  sig_int[1] ~ "NS", p <= sig_int[1] & p > sig_int[2] ~ "*",
+                p <= sig_int[2] ~ "**"
+              )
+            )
+            stat.test <- stat.test[stat.test$p.adj.signif != "NS", ]
+            if (length(stat.test > 4)) {
+              ggpubr::ggviolin(data[["Data_renamed"]],
+                               x = "Group",
+                               y = colnames(data[["Data_renamed"]])[number],
+                               color = "Group",
+                               palette = ckey,
+                               add = "jitter",
+                               size = size,
+                               order = order,
+                               width = width
+              ) +
+                ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+                ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
+                ggplot2::theme_classic() + ggplot2::theme(
+                  plot.title = ggplot2::element_text(
+                    size = T_size,
+                    face = "bold",
+                    color = "Black",
+                    hjust = 0.5,
+                    lineheight = 1.2
+                  ), # title
+                  plot.subtitle = ggplot2::element_text(
+                    size = 15,
+                    hjust = 0.5
+                  ), # subtitle
+                  plot.caption = ggplot2::element_text(size = 15), # caption
+                  axis.title.x = ggplot2::element_text(
+                    vjust = 10,
+                    size = 15
+                  ), # X axis title
+                  axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
+                  axis.text.x = ggplot2::element_text(
+                    size = X_text,
+                    vjust = .5
+                  ), # X axis text
+                  axis.text.y = ggplot2::element_text(size = Y_lab),
+                  legend.position = legend_position
+                ) +
+                ggpubr::stat_pvalue_manual(stat.test,
+                                           y.position = 1.05 * max(data[["Data_renamed"]][, number]),
+                                           step.increase = step_increase,
+                                           label.size = label_size,
+                                           tip.length = tip_length,
+                                           label = "p.adj.signif",
+                                           size = 3.5,
+                                           vjust = 0.05
+                )
+              ggplot2::ggsave(
+                filename = paste(NAMES[number], "violinplot.png", collapse = ""),
+                path = paste0(getwd(), "/violinplot"),
+                width = fig_width,
+                height = fig_height
+              )
+            } else if (significant_variable_only == F) {
+              ggpubr::ggviolin(data[["Data_renamed"]],
+                               x = "Group",
+                               y = colnames(data[["Data_renamed"]])[number],
+                               color = "Group",
+                               palette = ckey,
+                               size = size,
+                               add = "jitter",
+                               order = order,
+                               width = width
+              ) +
+                ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+                ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
+                ggplot2::theme_classic() + ggplot2::theme(
+                  plot.title = ggplot2::element_text(
+                    size = T_size,
+                    face = "bold",
+                    color = "Black",
+                    hjust = 0.5,
+                    lineheight = 1.2
+                  ), # title
+                  plot.subtitle = ggplot2::element_text(
+                    size = 15,
+                    hjust = 0.5
+                  ), # subtitle
+                  plot.caption = ggplot2::element_text(size = 15), # caption
+                  axis.title.x = ggplot2::element_text(
+                    vjust = 10,
+                    size = 15
+                  ), # X axis title
+                  axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
+                  axis.text.x = ggplot2::element_text(
+                    size = X_text,
+                    vjust = .5
+                  ), # X axis text
+                  axis.text.y = ggplot2::element_text(size = Y_lab),
+                  legend.position = legend_position
+                )
 
-  num_core <- parallel::detectCores()
-  final_cores <- length(p_val_data) %/% 30 + 1
-  if (final_cores >= (num_core - 2)) {
-    final_cores <- num_core - 2
-  }
-  cl <- parallel::makeCluster(final_cores)
-  doSNOW::registerDoSNOW(cl)
-  if (group_not_two) {
-    pb <- txtProgressBar(max = nrow(p_val_data), style = 3)
-  } else {
-    pb <- txtProgressBar(max = length(p_val_data), style = 3)
-  }
-  progress <- function(n) setTxtProgressBar(pb, n)
-  opts <- list(progress = progress)
-  suppressWarnings(
-    if (group_not_two) {
-      foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
-        stat.test <- as.data.frame(matrix(
-          data = NA, nrow = nrow(Comb),
-          ncol = 2
-        ))
-        stat.test[, 1:2] <- Comb
-        if (asterisk == "Dunn") {
-          rownames(stat.test) <- paste0(stat.test[, 1], " - ", stat.test[, 2])
-        } else if (asterisk == "Scheffe") {
-          rownames(stat.test) <- paste0(stat.test[, 2], "-", stat.test[, 1])
+              ggplot2::ggsave(
+                filename = paste(NAMES[number], "violinplot.png", collapse = ""),
+                path = paste0(getwd(), "/violinplot"),
+                width = fig_width,
+                height = fig_height
+              )
+            }
+          }
         } else {
-          rownames(stat.test) <- paste0(stat.test[, 1], "-", stat.test[, 2])
-        }
-        colnames(p_val_data) <- as.data.frame(strsplit(colnames(p_val_data), "___"))[1, ]
-        t1 <- as.data.frame(t(as.data.frame(p_val_data)[number, ]))
-        t2 <- stat.test
-        t3 <- merge(t2, t1, by = 0)
-        stat.test <- t3[, 2:4]
-        colnames(stat.test) <- c(
-          "group1", "group2",
-          "p"
-        )
-        stat.test <- stat.test %>% plyr::mutate(
-          p.adj.signif = case_when(
-            p >
-              sig_int[1] ~ "NS", p <= sig_int[1] & p > sig_int[2] ~ "*",
-            p <= sig_int[2] ~ "**"
-          )
-        )
-        stat.test <- stat.test[stat.test$p.adj.signif != "NS", ]
-        if (length(stat.test > 4)) {
-          ggpubr::ggviolin(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            add = "jitter",
-            size = size,
-            order = order,
-            width = width
-          ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
-            ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
-            ggplot2::theme_classic() + ggplot2::theme(
-              plot.title = ggplot2::element_text(
-                size = T_size,
-                face = "bold",
-                color = "Black",
-                hjust = 0.5,
-                lineheight = 1.2
-              ), # title
-              plot.subtitle = ggplot2::element_text(
-                size = 15,
-                hjust = 0.5
-              ), # subtitle
-              plot.caption = ggplot2::element_text(size = 15), # caption
-              axis.title.x = ggplot2::element_text(
-                vjust = 10,
-                size = 15
-              ), # X axis title
-              axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
-              axis.text.x = ggplot2::element_text(
-                size = X_text,
-                vjust = .5
-              ), # X axis text
-              axis.text.y = ggplot2::element_text(size = Y_lab),
-              legend.position = legend_position
-            ) +
-            ggpubr::stat_pvalue_manual(stat.test,
-              y.position = 1.05 * max(data[["Data_renamed"]][, number]),
-              step.increase = step_increase,
-              label.size = label_size,
-              tip.length = tip_length,
-              label = "p.adj.signif",
-              size = 3.5,
-              vjust = 0.05
+          p_val_data <- as.data.frame(p_val_data)
+          if (asterisk == "t_test") {
+            colnames(p_val_data) <- colnames(data[["Result"]])[1]
+          } else if (asterisk == "u_test") {
+            colnames(p_val_data) <- colnames(data[["Result"]])[2]
+          }
+          foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
+            df <- data_summary(data[["Data_renamed"]],
+                               varname = colnames(data[["Data_renamed"]])[number],
+                               groupnames = c("Group")
             )
-          ggplot2::ggsave(
-            filename = paste(NAMES[number], "violinplot.png", collapse = ""),
-            path = paste0(getwd(), "/violinplot"),
-            width = fig_width,
-            height = fig_height
-          )
-        } else if (significant_variable_only == F) {
-          ggpubr::ggviolin(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
-          ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
-            ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
-            ggplot2::theme_classic() + ggplot2::theme(
-              plot.title = ggplot2::element_text(
-                size = T_size,
-                face = "bold",
-                color = "Black",
-                hjust = 0.5,
-                lineheight = 1.2
-              ), # title
-              plot.subtitle = ggplot2::element_text(
-                size = 15,
-                hjust = 0.5
-              ), # subtitle
-              plot.caption = ggplot2::element_text(size = 15), # caption
-              axis.title.x = ggplot2::element_text(
-                vjust = 10,
-                size = 15
-              ), # X axis title
-              axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
-              axis.text.x = ggplot2::element_text(
-                size = X_text,
-                vjust = .5
-              ), # X axis text
-              axis.text.y = ggplot2::element_text(size = Y_lab),
-              legend.position = legend_position
-            )
+            df <- df %>% plyr::mutate(ymax = len + SEM)
+            colnames(df)[1] <- "Group"
+            stat.test <- as.data.frame(matrix(
+              data = NA, nrow = nrow(Comb),
+              ncol = 2
+            ))
+            stat.test[, 1:2] <- Comb
+            if (asterisk == "Dunn") {
+              rownames(stat.test) <- paste0(
+                stat.test[, 1],
+                " - ", stat.test[, 2]
+              )
+            } else if (asterisk == "Scheffe") {
+              rownames(stat.test) <- paste0(
+                stat.test[, 2],
+                "-", stat.test[, 1]
+              )
+            } else {
+              rownames(stat.test) <- paste0(
+                stat.test[, 1],
+                "-", stat.test[, 2]
+              )
+            }
+            colnames(p_val_data) <- as.data.frame(strsplit(
+              colnames(p_val_data),
+              "___"
+            ))[1, ]
+            t1 <- as.data.frame(t(as.data.frame(p_val_data[number, ])))
+            rownames(t1) <- colnames(p_val_data)
 
-          ggplot2::ggsave(
-            filename = paste(NAMES[number], "violinplot.png", collapse = ""),
-            path = paste0(getwd(), "/violinplot"),
-            width = fig_width,
-            height = fig_height
-          )
-        }
-      }
-    } else {
-      p_val_data <- as.data.frame(p_val_data)
-      if (asterisk == "t_test") {
-        colnames(p_val_data) <- colnames(data[["Result"]])[1]
-      } else if (asterisk == "u_test") {
-        colnames(p_val_data) <- colnames(data[["Result"]])[2]
-      }
-      foreach::foreach(number = 1:nrow(p_val_data), .options.snow = opts, .packages = c("LMSstat", "dplyr", "plyr")) %dopar% {
-        df <- data_summary(data[["Data_renamed"]],
-          varname = colnames(data[["Data_renamed"]])[number],
-          groupnames = c("Group")
-        )
-        df <- df %>% plyr::mutate(ymax = len + SEM)
-        colnames(df)[1] <- "Group"
-        stat.test <- as.data.frame(matrix(
-          data = NA, nrow = nrow(Comb),
-          ncol = 2
-        ))
-        stat.test[, 1:2] <- Comb
-        if (asterisk == "Dunn") {
-          rownames(stat.test) <- paste0(
-            stat.test[, 1],
-            " - ", stat.test[, 2]
-          )
-        } else if (asterisk == "Scheffe") {
-          rownames(stat.test) <- paste0(
-            stat.test[, 2],
-            "-", stat.test[, 1]
-          )
-        } else {
-          rownames(stat.test) <- paste0(
-            stat.test[, 1],
-            "-", stat.test[, 2]
-          )
-        }
-        colnames(p_val_data) <- as.data.frame(strsplit(
-          colnames(p_val_data),
-          "___"
-        ))[1, ]
-        t1 <- as.data.frame(t(as.data.frame(p_val_data[number, ])))
-        rownames(t1) <- colnames(p_val_data)
-
-        t2 <- stat.test
-        t3 <- merge(t2, t1, by = 0)
-        stat.test <- t3[, 2:4]
-        colnames(stat.test) <- c(
-          "group1", "group2",
-          "p"
-        )
-        stat.test <- stat.test %>% plyr::mutate(p.adj.signif = case_when(
-          p >
-            sig_int[1] ~ "NS", p <= sig_int[1] & p > sig_int[2] ~ "*",
-          p <= sig_int[2] ~ "**"
-        ))
-        stat.test <- stat.test[stat.test$p.adj.signif !=
-          "NS", ]
-        if (length(stat.test > 4)) {
-          ggpubr::ggviolin(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
-          ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
-            ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
-            ggplot2::theme_classic() + ggplot2::theme(
-              plot.title = ggplot2::element_text(
-                size = T_size,
-                face = "bold",
-                color = "Black",
-                hjust = 0.5,
-                lineheight = 1.2
-              ), # title
-              plot.subtitle = ggplot2::element_text(
-                size = 15,
-                hjust = 0.5
-              ), # subtitle
-              plot.caption = ggplot2::element_text(size = 15), # caption
-              axis.title.x = ggplot2::element_text(
-                vjust = 10,
-                size = 15
-              ), # X axis title
-              axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
-              axis.text.x = ggplot2::element_text(
-                size = X_text,
-                vjust = .5
-              ), # X axis text
-              axis.text.y = ggplot2::element_text(size = Y_lab),
-              legend.position = legend_position
-            ) +
-            ggpubr::stat_pvalue_manual(stat.test,
-              y.position = 1.05 * max(data[["Data_renamed"]][, number]), label = "p.adj.signif",
-              size = 3.5,
-              vjust = 0.05,
-              label.size = label_size,
-              tip.length = tip_length
+            t2 <- stat.test
+            t3 <- merge(t2, t1, by = 0)
+            stat.test <- t3[, 2:4]
+            colnames(stat.test) <- c(
+              "group1", "group2",
+              "p"
             )
-          ggplot2::ggsave(
-            filename = paste(NAMES[number], "violinplot.png", collapse = ""),
-            path = paste0(getwd(), "/violinplot"),
-            width = fig_width,
-            height = fig_height
-          )
-        } else if (significant_variable_only == F) {
-          ggpubr::ggviolin(data[["Data_renamed"]],
-            x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
-            palette = ckey,
-            size = size,
-            add = "jitter",
-            order = order,
-            width = width
-          ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
-            ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
-            ggplot2::theme_classic() + ggplot2::theme(
-              plot.title = ggplot2::element_text(
-                size = T_size,
-                face = "bold",
-                color = "Black",
-                hjust = 0.5,
-                lineheight = 1.2
-              ), # title
-              plot.subtitle = ggplot2::element_text(
-                size = 15,
-                hjust = 0.5
-              ), # subtitle
-              plot.caption = ggplot2::element_text(size = 15), # caption
-              axis.title.x = ggplot2::element_text(
-                vjust = 10,
-                size = 15
-              ), # X axis title
-              axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
-              axis.text.x = ggplot2::element_text(
-                size = X_text,
-                vjust = .5
-              ), # X axis text
-              axis.text.y = ggplot2::element_text(size = Y_lab),
-              legend.position = legend_position
-            )
+            stat.test <- stat.test %>% plyr::mutate(p.adj.signif = case_when(
+              p >
+                sig_int[1] ~ "NS", p <= sig_int[1] & p > sig_int[2] ~ "*",
+              p <= sig_int[2] ~ "**"
+            ))
+            stat.test <- stat.test[stat.test$p.adj.signif !=
+                                     "NS", ]
+            if (length(stat.test > 4)) {
+              ggpubr::ggviolin(data[["Data_renamed"]],
+                               x = "Group",
+                               y = colnames(data[["Data_renamed"]])[number],
+                               color = "Group",
+                               palette = ckey,
+                               size = size,
+                               add = "jitter",
+                               order = order,
+                               width = width
+              ) +
+                ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+                ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
+                ggplot2::theme_classic() + ggplot2::theme(
+                  plot.title = ggplot2::element_text(
+                    size = T_size,
+                    face = "bold",
+                    color = "Black",
+                    hjust = 0.5,
+                    lineheight = 1.2
+                  ), # title
+                  plot.subtitle = ggplot2::element_text(
+                    size = 15,
+                    hjust = 0.5
+                  ), # subtitle
+                  plot.caption = ggplot2::element_text(size = 15), # caption
+                  axis.title.x = ggplot2::element_text(
+                    vjust = 10,
+                    size = 15
+                  ), # X axis title
+                  axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
+                  axis.text.x = ggplot2::element_text(
+                    size = X_text,
+                    vjust = .5
+                  ), # X axis text
+                  axis.text.y = ggplot2::element_text(size = Y_lab),
+                  legend.position = legend_position
+                ) +
+                ggpubr::stat_pvalue_manual(stat.test,
+                                           y.position = 1.05 * max(data[["Data_renamed"]][, number]), label = "p.adj.signif",
+                                           size = 3.5,
+                                           vjust = 0.05,
+                                           label.size = label_size,
+                                           tip.length = tip_length
+                )
+              ggplot2::ggsave(
+                filename = paste(NAMES[number], "violinplot.png", collapse = ""),
+                path = paste0(getwd(), "/violinplot"),
+                width = fig_width,
+                height = fig_height
+              )
+            } else if (significant_variable_only == F) {
+              ggpubr::ggviolin(data[["Data_renamed"]],
+                               x = "Group",
+                               y = colnames(data[["Data_renamed"]])[number],
+                               color = "Group",
+                               palette = ckey,
+                               size = size,
+                               add = "jitter",
+                               order = order,
+                               width = width
+              ) +
+                ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+                ggplot2::labs(title = NAMES[number], x = NULL, y = "Intensity") +
+                ggplot2::theme_classic() + ggplot2::theme(
+                  plot.title = ggplot2::element_text(
+                    size = T_size,
+                    face = "bold",
+                    color = "Black",
+                    hjust = 0.5,
+                    lineheight = 1.2
+                  ), # title
+                  plot.subtitle = ggplot2::element_text(
+                    size = 15,
+                    hjust = 0.5
+                  ), # subtitle
+                  plot.caption = ggplot2::element_text(size = 15), # caption
+                  axis.title.x = ggplot2::element_text(
+                    vjust = 10,
+                    size = 15
+                  ), # X axis title
+                  axis.title.y = ggplot2::element_text(size = Y_text), # Y axis title
+                  axis.text.x = ggplot2::element_text(
+                    size = X_text,
+                    vjust = .5
+                  ), # X axis text
+                  axis.text.y = ggplot2::element_text(size = Y_lab),
+                  legend.position = legend_position
+                )
 
-          ggplot2::ggsave(
-            filename = paste(NAMES[number], "violinplot.png", collapse = ""),
-            path = paste0(getwd(), "/violinplot"),
-            width = fig_width,
-            height = fig_height
-          )
+              ggplot2::ggsave(
+                filename = paste(NAMES[number], "violinplot.png", collapse = ""),
+                path = paste0(getwd(), "/violinplot"),
+                width = fig_width,
+                height = fig_height
+              )
+            }
+          }
         }
-      }
+      )
+      close(pb)
+    },
+    finally = {
+      parallel::stopCluster(cl)
     }
   )
-  close(pb)
-  parallel::stopCluster(cl)
 }
