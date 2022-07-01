@@ -92,10 +92,7 @@ AS_dotplot <- function(data,
   group_not_two <- length(unique(data[["Data_renamed"]][["Group"]])) != 2
   tryCatch(expr = {
     num_core <- parallel::detectCores()
-    final_cores <- length(p_val_data) %/% 30 + 1
-    if (final_cores >= (num_core - 2)) {
-      final_cores <- num_core - 2
-    }
+    final_cores <- min(5, num_core)
     cl <- parallel::makeCluster(final_cores)
     doSNOW::registerDoSNOW(cl)
     if (group_not_two) {

@@ -95,10 +95,7 @@ AS_violinplot <- function(data,
   tryCatch(
     expr = {
       num_core <- parallel::detectCores()
-      final_cores <- length(p_val_data) %/% 30 + 1
-      if (final_cores >= (num_core - 2)) {
-        final_cores <- num_core - 2
-      }
+      final_cores <- min(5, num_core)
       cl <- parallel::makeCluster(final_cores)
       doSNOW::registerDoSNOW(cl)
       if (group_not_two) {
