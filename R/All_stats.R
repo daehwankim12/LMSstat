@@ -7,9 +7,10 @@
 #' @return List including Result Matrix of p-values, converted datas.
 #' @export
 #'
-#' @examples data(Data)
-#' Result <- Allstats_new(Data)
-Allstats_new <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
+#' @examples
+#' data("Data")
+#' Result <- All_stats(Data)
+All_stats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
   LETTERS210729 <- paste0("V", 1:500000)
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]

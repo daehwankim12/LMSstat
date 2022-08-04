@@ -41,15 +41,16 @@
     },
     "BiocParallel": {
       "Package": "BiocParallel",
-      "Version": "1.30.2",
+      "Version": "1.30.3",
       "Source": "Bioconductor",
       "git_url": "https://git.bioconductor.org/packages/BiocParallel",
       "git_branch": "RELEASE_3_15",
-      "git_last_commit": "e7e109f",
-      "git_last_commit_date": "2022-05-06",
-      "Hash": "fac0b655fda26ca18e3dbcdd07755100",
+      "git_last_commit": "f753ae8",
+      "git_last_commit_date": "2022-06-04",
+      "Hash": "6679083c9b26ccd9f474ac5ad0bf5ea6",
       "Requirements": [
         "BH",
+        "codetools",
         "futile.logger",
         "snow"
       ]
@@ -286,26 +287,6 @@
         "Rcpp"
       ]
     },
-    "RcppTOML": {
-      "Package": "RcppTOML",
-      "Version": "0.1.7",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f8a578aa91321ecec1292f1e2ffadeda",
-      "Requirements": [
-        "Rcpp"
-      ]
-    },
-    "Rtsne": {
-      "Package": "Rtsne",
-      "Version": "0.16",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "e921b89ef921905fc89b95886675706d",
-      "Requirements": [
-        "Rcpp"
-      ]
-    },
     "S4Vectors": {
       "Package": "S4Vectors",
       "Version": "0.34.0",
@@ -457,10 +438,10 @@
     },
     "broom": {
       "Package": "broom",
-      "Version": "0.8.0",
+      "Version": "1.0.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "fe13cb670e14da57fd7a466578db8ce5",
+      "Hash": "c948329889c7b24a4201df3aef5058c2",
       "Requirements": [
         "backports",
         "dplyr",
@@ -1257,16 +1238,6 @@
         "tibble",
         "tidyselect",
         "vctrs"
-      ]
-    },
-    "here": {
-      "Package": "here",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "24b224366f9c2e7534d2344d10d59211",
-      "Requirements": [
-        "rprojroot"
       ]
     },
     "highr": {
@@ -2148,23 +2119,6 @@
         "stringr"
       ]
     },
-    "reticulate": {
-      "Package": "reticulate",
-      "Version": "1.25",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "786b311743eb8cd347491f8f0a571941",
-      "Requirements": [
-        "Matrix",
-        "Rcpp",
-        "RcppTOML",
-        "here",
-        "jsonlite",
-        "png",
-        "rappdirs",
-        "withr"
-      ]
-    },
     "rjson": {
       "Package": "rjson",
       "Version": "0.2.21",
@@ -2673,20 +2627,6 @@
       "Hash": "b2e1cbce7c903eaf23ec05c58e59fb5e",
       "Requirements": [
         "cpp11"
-      ]
-    },
-    "umap": {
-      "Package": "umap",
-      "Version": "0.2.8.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "bdac3583bca22a4efbee25a1cd8f3fc9",
-      "Requirements": [
-        "Matrix",
-        "RSpectra",
-        "Rcpp",
-        "openssl",
-        "reticulate"
       ]
     },
     "utf8": {

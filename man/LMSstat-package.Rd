@@ -9,7 +9,12 @@
 Automation of statistical tests with an identical data input. The package Includes most Statistical tests used in metabolomics, aiming to reduce arduous work searching for packages and changing data input.
 }
 \author{
-\strong{Maintainer}: CHANG-HO KIM \email{demizor3@gmail.com}
+\strong{Maintainer}: Daehwan Kim \email{kdh5358@snu.ac.kr}
+
+Authors:
+\itemize{
+  \item CHANG-HO KIM \email{demizor3@gmail.com}
+}
 
 }
 \keyword{internal}

@@ -11,6 +11,7 @@
 #' data("Data")
 #' Result <- Allstats(Data)
 Allstats <- function(Data, Adjust_p_value = T, Adjust_method = "BH") {
+  .Deprecated("All_stats")
   LETTERS210729 <- paste0("V", 1:500000)
   colnames(Data) <- Data[1, ]
   Data <- Data[-1, -2]
