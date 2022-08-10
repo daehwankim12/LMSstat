@@ -64,14 +64,7 @@ All_stats <-
     split_u_test <- function(x, i) {
       if (var(groups_split[[x[1]]][[i]]) == 0 &&
         var(groups_split[[x[2]]][[i]]) == 0) {
-        if (groups_split[[x[1]]][[i]] == groups_split[[x[2]]][[i]]) {
-          1
-        } else {
-          wilcox.test(
-            groups_split[[x[1]]][[i]],
-            groups_split[[x[2]]][[i]]
-          )[["p.value"]]
-        }
+        1
       } else {
         wilcox.test(
           groups_split[[x[1]]][[i]],

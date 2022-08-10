@@ -79,11 +79,11 @@ data("Data")
 
 setwd("~")
 
-Data <- read.csv("statT.csv")
+Data <- read.csv("statT.csv", check.names = FALSE)
 
 install.packages("readxl")
 
-Data <- readxl::read_excel("statT.csv", sheet = 2)
+Data <- readxl::read_excel("statT.xlsx", sheet = 2)
 ```
 
 # Datafile needs to follow the following format
