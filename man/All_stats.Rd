@@ -4,7 +4,7 @@
 \alias{All_stats}
 \title{Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc), Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR}
 \usage{
-All_stats(Data, Adjust_p_value = T, Adjust_method = "BH")
+All_stats(Data, Adjust_p_value = TRUE, Adjust_method = "BH")
 }
 \arguments{
 \item{Data}{csv file with Header as False First column with Sample Second column with Multilevel(Mixomics) so that it can be compatible with other multivariate statistics Third column with Group information. Rest of the columns are the metabolites to be tested.}

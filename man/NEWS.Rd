@@ -65,3 +65,13 @@
   \item Two factor analysis added
   }
 }
+\section{Changes in version 1.0.11,(November 2021)}{
+  \itemize{
+  \item Violin plot added
+  }
+}
+\section{Changes in version 1.1.0,(August 2022)}{
+  \itemize{
+  \item Code refactoring
+  }
+}

@@ -12,13 +12,8 @@
 #' Result <- Multi_Perm(Data, Classification)
 #' # Note that the code recognized each class as a factor.
 Multi_Perm <- function(Data, Classification, method = "bray") {
-  colnames(Data) <- Data[1, ]
-  Data <- Data[-1, ]
-  Data <- Data[, -2]
   rownames(Data) <- Data[, 1]
   Data <- Data[, -1]
-  colnames(Classification) <- Classification[1, ]
-  Classification <- Classification[-1, ]
   rownames(Classification) <- Classification[, 1]
   Classification <- Classification[, -1]
   Data <- Data[, -1]
@@ -29,14 +24,22 @@ Multi_Perm <- function(Data, Classification, method = "bray") {
     Data[, n] <- as.numeric(Data[, n])
   }
   Dist_Met <- as.matrix(vegan::vegdist(Data, method = method))
-  NMDS <- vegan::metaMDS(Dist_Met, k = 2, trymax = 2000) # Bray curtis
+  NMDS <-
+    vegan::metaMDS(Dist_Met, k = 2, trymax = 2000) # Bray curtis
   x_y_coord <- as.data.frame(vegan::scores(NMDS, display = "sites"))
   result <- list()
   for (n in 1:ncol(Classification)) {
     x_y_coord_G <- cbind(x_y_coord, Classification[, n])
     colnames(x_y_coord_G)[3] <- "Group"
-    M_p_value <- vegan::adonis2(Dist_Met ~ Group, method = method, by = NULL, data = x_y_coord_G)
-    eval(parse(text = paste0("result$", colnames(Classification)[n], "<-M_p_value")))
+    M_p_value <-
+      vegan::adonis2(Dist_Met ~ Group,
+        method = method,
+        by = NULL,
+        data = x_y_coord_G
+      )
+    eval(parse(text = paste0(
+      "result$", colnames(Classification)[n], "<-M_p_value"
+    )))
   }
   result
 }

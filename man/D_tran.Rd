@@ -4,7 +4,7 @@
 \alias{D_tran}
 \title{Scale_Transformation of data file}
 \usage{
-D_tran(data, param = "None", save = F)
+D_tran(data, param = "None", save = FALSE)
 }
 \arguments{
 \item{param}{"None","Auto","log10","Pareto"}

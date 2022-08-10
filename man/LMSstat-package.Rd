@@ -8,12 +8,27 @@
 \description{
 Automation of statistical tests with an identical data input. The package Includes most Statistical tests used in metabolomics, aiming to reduce arduous work searching for packages and changing data input.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/daehwankim12/LMSstat}
+  \item Report bugs at \url{https://github.com/daehwankim12/LMSstat/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Daehwan Kim \email{kdh5358@snu.ac.kr}
 
 Authors:
 \itemize{
+  \item Hyunho Song \email{shh0409@snu.ac.kr}
   \item CHANG-HO KIM \email{demizor3@gmail.com}
+}
+
+Other contributors:
+\itemize{
+  \item Jihyun Chun \email{jihyun5311@snu.ac.kr} [contributor]
+  \item Seong-Hun Bong \email{b970612@naver.com} [contributor]
 }
 
 }
