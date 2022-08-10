@@ -47,8 +47,6 @@ https://cran.r-project.org/bin/windows/Rtools/
 ```
 install.packages("devtools")
 
-devtools::install_github("CHKim5/LMSstat")
-
 devtools::install_github("daehwankim12/LMSstat")
 
 devtools::install_github("daehwankim12/LMSstat", ref = "develop")
@@ -91,7 +89,7 @@ Data <- readxl::read_excel("statT.csv", sheet = 2)
 # Datafile needs to follow the following format
 
 <p align="center">  
-<img src="https://user-images.githubusercontent.com/87584921/183582482-a8b95fc7-13b2-4fcf-9626-43dc36d1e0a8.png" width="750" height="400">
+<img src="https://user-images.githubusercontent.com/87584921/183798448-03f22df1-aa29-4a38-89b4-014be7a9078f.png" width="750" height="400">
 </p>
 <p align="center">statT.csv</p>
 
