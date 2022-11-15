@@ -14,6 +14,13 @@ All_stats <-
   function(Data,
            Adjust_p_value = TRUE,
            Adjust_method = "BH") {
+    if ("group" %in% colnames(Data)) {
+      Data <- dplyr::rename(Data, "Group" = "group")
+    }
+    if ("sample" %in% colnames(Data)) {
+      Data <- dplyr::rename(Data, "Sample" = "sample")
+    }
+    Data$Group <- as.character(Data$Group)
     Data <- Data %>% dplyr::arrange(Data$Group)
     Data_renamed <- Data
     nmet <- ncol(Data) - 2

@@ -16,6 +16,13 @@ Allstats <-
            Adjust_method = "BH") {
     .Deprecated("All_stats")
     LETTERS210729 <- paste0("V", 1:500000)
+    if ("group" %in% colnames(Data)) {
+      Data <- dplyr::rename(Data, "Group" = "group")
+    }
+    if ("sample" %in% colnames(Data)) {
+      Data <- dplyr::rename(Data, "Sample" = "sample")
+    }
+    Data$Group <- as.character(Data$Group)
     Data <- Data %>% dplyr::arrange(Data$Group)
     Data_renamed <- Data
     nmet <- ncol(Data) - 2
