@@ -32,7 +32,7 @@ All_stats <-
     Data_renamed_raw <- apply(Data_renamed_raw, 2, as.numeric)
     Data_final <- cbind(Data[, 1:2], Data_renamed_raw)
     Data_final <- data.table::as.data.table(Data_final)
-    Data_final$Group <- as.factor(Data_final$Group)
+    Data_final$Group <- as.factor(as.character(Data_final$Group))
 
     groups_split <- split(Data_final, Data_final$Group)
     group_nottwo <- length(unique(Data_final$Group)) > 2
