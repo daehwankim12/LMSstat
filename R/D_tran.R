@@ -9,13 +9,14 @@
 #'
 #' @examples data(Data)
 #' D_tran(Data, param = "Pareto")
-D_tran <- function(data, param = "None", save = F) {
-  colnames(data) <- data[1, ]
-  data <- data[-1, -2]
+D_tran <- function(data, param = "None", save = FALSE) {
   data <- data %>% dplyr::arrange(data$Group)
   rownames(data) <- data[, 1]
   data <- data[, -1]
-  data[, 2:ncol(data)] <- sapply(data[, 2:ncol(data)], function(x) as.numeric(x))
+  data[, 2:ncol(data)] <-
+    sapply(data[, 2:ncol(data)], function(x) {
+      as.numeric(x)
+    })
 
   if (param == "None") {
     data <- data
@@ -24,9 +25,10 @@ D_tran <- function(data, param = "None", save = F) {
   } else if (param == "log10") {
     data[, 2:ncol(data)] <- log10(data[, 2:ncol(data)])
   } else if (param == "Pareto") {
-    data[, 2:ncol(data)] <- scale(data[, 2:ncol(data)], scale = sqrt(sapply(data[, 2:ncol(data)], sd)))
+    data[, 2:ncol(data)] <-
+      scale(data[, 2:ncol(data)], scale = sqrt(sapply(data[, 2:ncol(data)], sd)))
   }
-  if (save == T) {
+  if (save) {
     write.csv(data, paste0("datafile_scaled_to_", param, ".csv"))
   }
   return(data)

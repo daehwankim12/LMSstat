@@ -1,18 +1,21 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.0.11
-Authors@R: 
-    person(given = "CHANG-HO",
-           family = "KIM",
-           role = c("aut", "cre"),
-           email = "demizor3@gmail.com")
+Version: 1.1.0
+Authors@R: c(
+    person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
+    person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
+    person("Jihyun", "Chun", email = "jihyun5311@snu.ac.kr", role = c("ctb")),
+    person("Seong-Hun", "Bong", email = "b970612@naver.com", role = c("ctb")),
+    person("CHANG-HO", "KIM", email = "demizor3@gmail.com", role = "aut"))
 Description: Automation of statistical tests with an identical data input. 
     The package Includes most Statistical tests used in metabolomics,
     aiming to reduce arduous work searching for packages and changing data input.
 Encoding: UTF-8
 LazyData: true
+URL: https://github.com/daehwankim12/LMSstat
+BugReports: https://github.com/daehwankim12/LMSstat/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 License: MIT + file LICENSE
 biocViews:
 Imports: 
@@ -41,6 +44,7 @@ Imports:
     doParallel,
     doSNOW
 Depends:
+    R (>= 3.5.0),
     plyr,
     dplyr,
     foreach

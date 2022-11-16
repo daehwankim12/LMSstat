@@ -5,7 +5,7 @@
 \alias{Data}
 \title{Sample metabolomics data}
 \format{
-An object of class \code{data.frame} with 64 rows and 12 columns.
+An object of class \code{data.frame} with 63 rows and 11 columns.
 }
 \usage{
 data(Data)

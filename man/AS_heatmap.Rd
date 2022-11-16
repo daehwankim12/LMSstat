@@ -18,8 +18,8 @@ AS_heatmap(
   T_size = 10,
   R_size = 7,
   C_size = 5,
-  Gcol = c(ASD = "black", HGH = "red", LAC = "blue", LUE = "grey", SDF = "yellow", WEI
-    = "green"),
+  Gcol = c(ASD = "black", HGH = "red", LAC = "blue", LUE = "grey", SDF = "yellow", WEI =
+    "green"),
   Title = "Sample Heatmap",
   dend_h = 0.5,
   a_h = 0.2

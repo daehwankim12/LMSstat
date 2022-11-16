@@ -37,7 +37,14 @@ AS_heatmap <- function(data,
                        T_size = 10,
                        R_size = 7,
                        C_size = 5,
-                       Gcol = c("ASD" = "black", "HGH" = "red", "LAC" = "blue", "LUE" = "grey", "SDF" = "yellow", "WEI" = "green"),
+                       Gcol = c(
+                         "ASD" = "black",
+                         "HGH" = "red",
+                         "LAC" = "blue",
+                         "LUE" = "grey",
+                         "SDF" = "yellow",
+                         "WEI" = "green"
+                       ),
                        Title = "Sample Heatmap",
                        dend_h = 0.5,
                        a_h = 0.2) {
@@ -54,17 +61,23 @@ AS_heatmap <- function(data,
 
   Gcol_D <- as.data.frame(Gcol)
   ha <- ComplexHeatmap::HeatmapAnnotation(
-    Group = data$Group, col = list(Group = Gcol),
-    annotation_legend_param = F, show_annotation_name = F, show_legend = F, simple_anno_size = grid::unit(a_h, "cm")
+    Group = data$Group,
+    col = list(Group = Gcol),
+    annotation_legend_param = F,
+    show_annotation_name = F,
+    show_legend = F,
+    simple_anno_size = grid::unit(a_h, "cm")
   )
   G_I <- ComplexHeatmap::Legend(
-    labels = rownames(Gcol_D), title = g_legend,
+    labels = rownames(Gcol_D),
+    title = g_legend,
     legend_gp = grid::gpar(fill = Gcol_D[, 1]),
     labels_gp = grid::gpar(fontfamily = "sans", fontface = "plain")
   )
   M_I <- ComplexHeatmap::Legend(col_fun = colors, title = h_legend)
   pd <- ComplexHeatmap::packLegend(list = list(G_I, M_I))
-  kt <- ComplexHeatmap::Heatmap(t(m_for_heatmap),
+  kt <- ComplexHeatmap::Heatmap(
+    t(m_for_heatmap),
     col = colors,
     column_title = Title,
     column_title_gp = grid::gpar(fontsize = T_size),
@@ -79,7 +92,8 @@ AS_heatmap <- function(data,
     clustering_distance_columns = distance,
     show_column_names = colnames,
     show_row_names = rownames,
-    width = grid::unit(Hsize[1], "cm"), height = grid::unit(Hsize[2], "cm"),
+    width = grid::unit(Hsize[1], "cm"),
+    height = grid::unit(Hsize[2], "cm"),
     top_annotation = ha,
     show_heatmap_legend = F
   )

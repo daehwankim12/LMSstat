@@ -79,19 +79,19 @@ data("Data")
 
 # Uploading your own Data
 
-setwd("C:/Users/82102/Desktop")
+setwd("~")
 
-Data <- read.csv("statT.csv", header = F)
+Data <- read.csv("statT.csv")
+
+install.packages("readxl")
+
+Data <- readxl::read_excel("statT.csv", sheet = 2)
 ```
-**The column "Multilevel" is mandatory for the code to run flawlessly.**
-
-**If Multilevel is not used, fill the column with random characters**
 
 # Datafile needs to follow the following format
-# Care for Capitals: Sample, Multilevel, Group 
 
 <p align="center">  
-<img src="https://user-images.githubusercontent.com/77651662/125877205-e140d306-81d8-459f-8414-b8ef3bca63d7.PNG" width="750" height="400">
+<img src="https://user-images.githubusercontent.com/87584921/183582482-a8b95fc7-13b2-4fcf-9626-43dc36d1e0a8.png" width="750" height="400">
 </p>
 <p align="center">statT.csv</p>
 
@@ -117,9 +117,9 @@ Classification <- read.csv("statT_G.csv", header = F)
 ### Univariate statistics
 
 ```
-Statfile <- Allstats_new(Data,Adjust_p_value = T, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
+Statfile <- All_stats(Data,Adjust_p_value = TRUE, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
 
-Statfile <- Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous version using for-loop
+Statfile <- Allstats(Data,Adjust_p_value = TRUE, Adjust_method = "BH") # Previous version using for-loop
 ```
 ##### Adjustable parameters
 
@@ -131,6 +131,10 @@ Statfile <- Allstats(Data,Adjust_p_value = T, Adjust_method = "BH") # Previous v
 head(Statfile[["Result"]]) # includes all statistical results
 
 write.csv(Statfile[["Result"]], "p_value_result.csv")  # Write csv with all the p-value included
+
+install.packages("writexl")
+
+writexl::write_xlsx(list(mysheet = Data), "p_value_result.xlsx")  # Write xlsx with all the p-value included
 ```
 ### Plots
 
@@ -210,7 +214,7 @@ write.csv(Result, "Normality_test_Result.csv")
 <img src="https://user-images.githubusercontent.com/77651662/126578553-f2d583db-d649-4db7-92bb-8cfa9433904a.PNG" width="400" height="350">
 </p>
 
-### Scheirer–Ray–Hare Test
+### Scheirer–Ray–Hare Test - do not use
 
 ```
 # csv files including significant variables (Multilevel, Group, interaction) and a Venn diagram are downloaded

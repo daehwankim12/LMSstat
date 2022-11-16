@@ -20,7 +20,7 @@ PCA(
 \arguments{
 \item{Data}{uploaded data}
 
-\item{color}{colors used for ggplots.color=c("#FF3300","#FF6600","#FFCC00","#99CC00","#0066CC","#660099")}
+\item{color}{colors used for ggplots.color}
 
 \item{legend_position}{legend position "none","left","right","bottom","top"}
 

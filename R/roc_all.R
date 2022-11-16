@@ -25,14 +25,30 @@ roc_all <- function(data, cov = T) {
       data_Nadj[, n] <- as.numeric(data_Nadj[, n])
     }
 
-    Result_unadj <- matrix(data = NA, nrow = (ncol(data_Nadj) - 1), ncol = 3)
+    Result_unadj <-
+      matrix(
+        data = NA,
+        nrow = (ncol(data_Nadj) - 1),
+        ncol = 3
+      )
     rownames(Result_unadj) <- colnames(data_Nadj)[2:ncol(data_Nadj)]
     colnames(Result_unadj) <- c("AUC", "Specificity", "Sensitivity")
     for (i in 2:ncol(data_Nadj)) {
-      roc_res <- pROC::roc(response = data_Nadj$Group, predictor = data_Nadj[, i], percent = TRUE, quiet = T)
+      roc_res <-
+        pROC::roc(
+          response = data_Nadj$Group,
+          predictor = data_Nadj[, i],
+          percent = TRUE,
+          quiet = T
+        )
       Result_unadj[(i - 1), 1] <- roc_res[["auc"]]
       for (n in 2:3) {
-        Result_unadj[(i - 1), n] <- pROC::coords(roc_res, "best", transpose = FALSE, best.method = "youden")[1, n]
+        Result_unadj[(i - 1), n] <-
+          pROC::coords(roc_res,
+            "best",
+            transpose = FALSE,
+            best.method = "youden"
+          )[1, n]
       }
     }
     data_adj <- data
@@ -41,30 +57,47 @@ roc_all <- function(data, cov = T) {
     }
 
     ##### adjusted #####
-    Result_adj <- matrix(data = NA, nrow = (ncol(data_adj) - 2), ncol = 3)
+    Result_adj <-
+      matrix(
+        data = NA,
+        nrow = (ncol(data_adj) - 2),
+        ncol = 3
+      )
     rownames(Result_adj) <- colnames(data_adj)[3:ncol(data_adj)]
     colnames(Result_adj) <- c("AUC", "Specificity", "Sensitivity")
-    LETTERS702 <- c(sapply(LETTERS, function(x) paste0(x, LETTERS)))
-    LETTERS37232 <- c(LETTERS, LETTERS702, sapply(LETTERS, function(x) {
-      paste0(
-        x,
-        LETTERS702
-      )
+    LETTERS702 <- c(sapply(LETTERS, function(x) {
+      paste0(x, LETTERS)
     }))
+    LETTERS37232 <-
+      c(LETTERS, LETTERS702, sapply(LETTERS, function(x) {
+        paste0(
+          x,
+          LETTERS702
+        )
+      }))
     LETTERS37232 <- LETTERS37232[-365]
-    colnames(data_adj)[3:ncol(data_adj)] <- LETTERS37232[1:(ncol(data_adj) - 2)]
+    colnames(data_adj)[3:ncol(data_adj)] <-
+      LETTERS37232[1:(ncol(data_adj) - 2)]
     for (i in 3:ncol(data_adj)) {
-      AROC <- ROCnReg::AROC.sp(paste0(colnames(data_adj)[i], "~Covariate"), group = "Group", tag.h = "0", data = data_adj)
+      AROC <-
+        ROCnReg::AROC.sp(
+          paste0(colnames(data_adj)[i], "~Covariate"),
+          group = "Group",
+          tag.h = "0",
+          data = data_adj
+        )
       Tem <- aroc_compute(AROC)
       Result_adj_YI <- matrix(ncol = 3, nrow = 500)
-      colnames(Result_adj_YI) <- c("YI", "Specificity", "Sensitivity")
+      colnames(Result_adj_YI) <-
+        c("YI", "Specificity", "Sensitivity")
       Result_adj_YI[, 1] <- (Tem$specificity + Tem$sensitivity - 1)
       Result_adj_YI[, 2] <- Tem$specificity
       Result_adj_YI[, 3] <- Tem$sensitivity
       Result_adj_YI <- as.data.frame(Result_adj_YI)
       Result_adj[(i - 2), 1] <- AROC[["AUC"]][["est"]]
       for (n in 2:3) {
-        Result_adj[(i - 2), n] <- Result_adj_YI[order(Result_adj_YI$YI, decreasing = T), ][1, ][, n]
+        Result_adj[(i - 2), n] <-
+          Result_adj_YI[order(Result_adj_YI$YI, decreasing = T), ][1, ][, n]
       }
     }
     Final <- list()
@@ -82,14 +115,30 @@ roc_all <- function(data, cov = T) {
       data_Nadj[, n] <- as.numeric(data_Nadj[, n])
     }
 
-    Result_unadj <- matrix(data = NA, nrow = (ncol(data_Nadj) - 1), ncol = 3)
+    Result_unadj <-
+      matrix(
+        data = NA,
+        nrow = (ncol(data_Nadj) - 1),
+        ncol = 3
+      )
     rownames(Result_unadj) <- colnames(data_Nadj)[2:ncol(data_Nadj)]
     colnames(Result_unadj) <- c("AUC", "Specificity", "Sensitivity")
     for (i in 2:ncol(data_Nadj)) {
-      roc_res <- pROC::roc(response = data_Nadj$Group, predictor = data_Nadj[, i], percent = TRUE, quiet = T)
+      roc_res <-
+        pROC::roc(
+          response = data_Nadj$Group,
+          predictor = data_Nadj[, i],
+          percent = TRUE,
+          quiet = T
+        )
       Result_unadj[(i - 1), 1] <- roc_res[["auc"]]
       for (n in 2:3) {
-        Result_unadj[(i - 1), n] <- pROC::coords(roc_res, "best", transpose = FALSE, best.method = "youden")[1, n]
+        Result_unadj[(i - 1), n] <-
+          pROC::coords(roc_res,
+            "best",
+            transpose = FALSE,
+            best.method = "youden"
+          )[1, n]
       }
     }
     Result_unadj

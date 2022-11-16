@@ -22,7 +22,7 @@ NMDS(
 
 \item{methods}{c("manhattan", "euclidean", "canberra", "clark", "bray", "kulczynski", "jaccard", "gower", "altGower", "morisita", "horn",  "raup", "binomial", "mahalanobis", "chisq","chord")}
 
-\item{color}{colors used for ggplots.color=c("#FF3300","#FF6600","#FFCC00","#99CC00","#0066CC","#660099")}
+\item{color}{colors used for ggplots.color}
 
 \item{legend_position}{legend position "none","left","right","bottom","top"}
 
