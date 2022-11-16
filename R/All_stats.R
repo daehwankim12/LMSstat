@@ -173,13 +173,19 @@ All_stats <-
 
     #### finalization ####
 
-    Names <- NULL
-    for (i in seq_len(choose(length(groups_split), 2))) {
+    Names <- NULL # In R 4.2.2, remove if-else. (Legacy)
+    if (group_nottwo) {for (i in seq_len(choose(length(groups_split), 2))) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-        combn(names(groups_split), 2)[2, i],
-        sep = "-"
+                                  combn(names(groups_split), 2)[2, i],
+                                  sep = "-"
+      ))
+    }} else {
+      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1],
+                                  combn(names(groups_split), 2)[2],
+                                  sep = "-"
       ))
     }
+
     rownamechange <- colnames(Data)[nmet_seq]
     rownames(df_ttest) <- rownamechange
     rownames(df_utest) <- rownamechange

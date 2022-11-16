@@ -44,7 +44,7 @@ Imports:
     doParallel,
     doSNOW
 Depends:
-    R (>= 3.5.0),
+    R (>= 4.2.2),
     plyr,
     dplyr,
     foreach
