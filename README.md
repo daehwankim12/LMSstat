@@ -84,6 +84,7 @@ Data <- read.csv("statT.csv")
 install.packages("readxl")
 
 Data <- readxl::read_excel("statT.csv", sheet = 2)
+Data <- as.data.frame(Data)
 ```
 
 # Datafile needs to follow the following format
