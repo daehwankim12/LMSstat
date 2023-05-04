@@ -240,25 +240,23 @@ All_stats <-
     # Initialize the Names variable to NULL
     Names <- NULL
 
-    # In R 4.2.2, remove if-else. (Legacy)
-    # If there are more than two groups, create all possible pairs of group names
-    # and store them in the Names matrix
-    # if (group_nottwo) {
-    #   for (i in seq_len(choose(length(groups_split), 2))) {
-    #     Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-    #                                 combn(names(groups_split), 2)[2, i],
-    #                                 sep = "-"
-    #     ))
-    #   }
-    #
-    #   # If there are only two groups, create a single pair of group names
-    #   # and store it in the Names matrix
-    # } else {
-    #   Names <- rbind(Names, paste(combn(names(groups_split), 2)[1],
-    #                               combn(names(groups_split), 2)[2],
-    #                               sep = "-"
-    #   ))
-    # }
+    # TODO: remove if-else sentence
+    if (group_nottwo) {
+      for (i in seq_len(choose(length(groups_split), 2))) {
+        Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
+                                    combn(names(groups_split), 2)[2, i],
+                                    sep = "-"
+        ))
+      }
+
+      # If there are only two groups, create a single pair of group names
+      # and store it in the Names matrix
+    } else {
+      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1],
+                                  combn(names(groups_split), 2)[2],
+                                  sep = "-"
+      ))
+    }
 
     # Change the row names of the data frames containing the results of the t-test and U-test
     # to the names of the metabolites
