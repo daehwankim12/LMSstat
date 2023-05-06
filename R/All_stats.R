@@ -72,7 +72,7 @@ All_stats <-
     split_t_test <- function(x, i) {
       # If both groups have zero variance, return p-value of 1
       if (var(groups_split[[x[1]]][[i]]) == 0 &&
-          var(groups_split[[x[2]]][[i]]) == 0) {
+        var(groups_split[[x[2]]][[i]]) == 0) {
         1
       } else {
         # Otherwise, perform t-test and return p-value
@@ -100,7 +100,7 @@ All_stats <-
     split_u_test <- function(x, i) {
       # If both groups have zero variance, return p-value of 1
       if (var(groups_split[[x[1]]][[i]]) == 0 &&
-          var(groups_split[[x[2]]][[i]]) == 0) {
+        var(groups_split[[x[2]]][[i]]) == 0) {
         1
       } else {
         # Otherwise, perform u-test and return p-value
@@ -240,23 +240,14 @@ All_stats <-
     # Initialize the Names variable to NULL
     Names <- NULL
 
-    # TODO: remove if-else sentence
-    if (group_nottwo) {
-      for (i in seq_len(choose(length(groups_split), 2))) {
-        Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-                                    combn(names(groups_split), 2)[2, i],
-                                    sep = "-"
-        ))
-      }
-
-      # If there are only two groups, create a single pair of group names
-      # and store it in the Names matrix
-    } else {
-      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1],
-                                  combn(names(groups_split), 2)[2],
-                                  sep = "-"
+    for (i in seq_len(choose(length(groups_split), 2))) {
+      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
+        combn(names(groups_split), 2)[2, i],
+        sep = "-"
       ))
     }
+
+
 
     # Change the row names of the data frames containing the results of the t-test and U-test
     # to the names of the metabolites
