@@ -24,12 +24,6 @@ The package includes
 * PCA
 
 * PCoA
-## Contribution acknowledgement
-### Oct.01/2021 Daehwan Kim
-
-- Allstats_new optimization for faster processing
-
-- bug fix of Allstats (regarding LETTERS210729) 
 
 ## Instructions
 
@@ -79,11 +73,11 @@ data("Data")
 
 setwd("~")
 
-Data <- read.csv("statT.csv")
+Data <- read.csv("statT.csv", check.names = FALSE)
 
 install.packages("readxl")
 
-Data <- readxl::read_excel("statT.csv", sheet = 2)
+Data <- readxl::read_excel("statT.xlsx", sheet = 2)
 Data <- as.data.frame(Data)
 ```
 

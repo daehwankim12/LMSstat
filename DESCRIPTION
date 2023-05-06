@@ -1,11 +1,12 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.1.0
+Version: 1.1.1
 Authors@R: c(
     person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
     person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
     person("Jihyun", "Chun", email = "jihyun5311@snu.ac.kr", role = c("ctb")),
     person("Seong-Hun", "Bong", email = "b970612@naver.com", role = c("ctb")),
+    person("Homin", "Park", email = "pluto99@snu.ac.kr", role = c("ctb")),
     person("CHANG-HO", "KIM", email = "demizor3@gmail.com", role = "aut"))
 Description: Automation of statistical tests with an identical data input. 
     The package Includes most Statistical tests used in metabolomics,
@@ -44,7 +45,7 @@ Imports:
     doParallel,
     doSNOW
 Depends:
-    R (>= 3.5.0),
+    R (>= 4.2.2),
     plyr,
     dplyr,
     foreach
