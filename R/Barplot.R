@@ -1,15 +1,15 @@
-#' Automatically save dotplots for all metabolites including asterisks for significance.
+#' Automatically save barplots for all metabolites including asterisks for significance.
 #'
 #' @param data List inheriting from Allstats
 #' @param asterisk Choose asterisk to plot ("Dunn","Scheffe","u_test","t_test")
 #' @param significant_variable_only show significant variable only (T,F)
 #' @param color colors used for ggplots.
 #' @param order order of the groups; order = c("A","B","C")
-#' @param legend_position legend position "none","left","right","bottom","top"
 #' @param tip_length significance tip length
+#' @param legend_position legend position "none","left","right","bottom","top"
 #' @param label_size significance label size
 #' @param step_increase significance step increase
-#' @param size dot size
+#' @param width bar width
 #' @param fig_width figure size
 #' @param fig_height figure size
 #' @param Y_text Y axis title size
@@ -19,44 +19,45 @@
 #' @param sig_int significance parameter
 #'
 #' @importFrom foreach %dopar%
-#' @return ggdotplot
+#' @return ggbarplot
 #' @export
 #'
-#' @examples data(Data)
+#' @examples data("Data")
 #' Test <- All_stats(Data)
-#' AS_dotplot(Test,
-#'   asterisk = "Dunn", significant_variable_only = F,
+#' Barplot(Test,
+#'   asterisk = "Dunn", significant_variable_only = FALSE,
 #'   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
 #' )
-AS_dotplot <- function(data,
-                       asterisk = "t_test",
-                       significant_variable_only = F,
-                       color = c(
-                         "#FF3300",
-                         "#FF6600",
-                         "#FFCC00",
-                         "#99CC00",
-                         "#0066CC",
-                         "#660099"
-                       ),
-                       legend_position = "none",
-                       order = NULL,
-                       tip_length = 0.01,
-                       label_size = 2.88,
-                       step_increase = 0.05,
-                       size = NULL,
-                       fig_width = NA,
-                       fig_height = NA,
-                       X_text = 10,
-                       Y_text = 12,
-                       Y_lab = 10,
-                       T_size = 15,
-                       sig_int = c(0.05, 0.01)) {
-  { # Summary
+Barplot <- function(data,
+                    asterisk = "t_test",
+                    significant_variable_only = F,
+                    color = c(
+                      "#FF3300",
+                      "#FF6600",
+                      "#FFCC00",
+                      "#99CC00",
+                      "#0066CC",
+                      "#660099"
+                    ),
+                    legend_position = "none",
+                    order = NULL,
+                    tip_length = 0.01,
+                    label_size = 2.88,
+                    step_increase = 0.05,
+                    width = 0.3,
+                    fig_width = NA,
+                    fig_height = NA,
+                    X_text = 10,
+                    Y_text = 12,
+                    Y_lab = 10,
+                    T_size = 15,
+                    sig_int = c(0.05, 0.01)) {
+  {
+    # Summary
     ### Plot_data_prep###
-    ifelse(!dir.exists(file.path(getwd(), "dotplot")), dir.create(file.path(getwd(), "dotplot")), FALSE)
+    ifelse(!dir.exists(file.path(getwd(), "barplot")), dir.create(file.path(getwd(), "barplot")), FALSE)
     data[["Data_renamed"]] <-
-      data[["Data_renamed"]] %>% mutate(ZZZZ = data[["Data_renamed"]][, 2])
+      data[["Data_renamed"]] %>% plyr::mutate(ZZZZ = data[["Data_renamed"]][, 2])
     data[["Data_renamed"]] <- data[["Data_renamed"]][, c(-1, -2)]
     data[["Data_renamed"]][, 1:(ncol(data[["Data_renamed"]]) - 1)] <-
       sapply(
@@ -68,8 +69,6 @@ AS_dotplot <- function(data,
     NAMES <- colnames(data[["Data"]][3:ncol(data[["Data"]])])
     data[["Data_renamed"]]$ZZZZ <-
       as.factor(data[["Data_renamed"]]$ZZZZ)
-    colnames(data[["Data_renamed"]])[ncol(data[["Data_renamed"]])] <-
-      "Group"
     Comb <-
       gtools::combinations(length(unique(data[["Data"]]$Group)), 2, unique(data[["Data"]]$Group))
     ckey <- color[1:length(unique(data[["Data"]]$Group))]
@@ -99,10 +98,11 @@ AS_dotplot <- function(data,
           p_val_data[b] <- 1
         }
       }
-    }  }
+    }
+  }
   ### Plots###
   group_not_two <-
-    length(unique(data[["Data_renamed"]][["Group"]])) != 2
+    length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2
   tryCatch(expr = {
     num_core <- parallel::detectCores()
     final_cores <- min(5, num_core)
@@ -123,6 +123,12 @@ AS_dotplot <- function(data,
         .options.snow = opts,
         .packages = c("LMSstat", "dplyr", "plyr")
       ) %dopar% {
+        df <- data_summary(data[["Data_renamed"]],
+          varname = colnames(data[["Data_renamed"]])[number],
+          groupnames = c("ZZZZ")
+        )
+        df <- df %>% plyr::mutate(ymax = len + SEM)
+        colnames(df)[1] <- "Group"
         stat.test <- as.data.frame(matrix(
           data = NA,
           nrow = nrow(Comb),
@@ -157,23 +163,26 @@ AS_dotplot <- function(data,
         )
         stat.test <- stat.test[stat.test$p.adj.signif != "NS", ]
         if (length(stat.test > 4)) {
-          ggpubr::ggstripchart(
-            data[["Data_renamed"]],
+          ggpubr::ggbarplot(
+            df,
             x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
+            y = "len",
+            color = NA,
+            fill = "Group",
             palette = ckey,
             order = order,
-            size = size
+            width = width
           ) +
-            ggplot2::stat_summary(
-              fun.y = median,
-              fun.ymin = median,
-              fun.ymax = median,
-              geom = "crossbar",
-              width = 0.4,
-              color = "Black",
-              size = 0.2
+            ggplot2::geom_errorbar(
+              ggplot2::aes(
+                x = Group,
+                ymin = len - SEM,
+                ymax = len + SEM
+              ),
+              width = 0.2,
+              colour = "Black",
+              alpha = 1,
+              size = 0.5
             ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(
@@ -223,29 +232,32 @@ AS_dotplot <- function(data,
               vjust = 0.05
             )
           ggplot2::ggsave(
-            filename = paste(NAMES[number], "dotplot.png", collapse = ""),
-            path = paste0(getwd(), "/dotplot"),
+            filename = paste(NAMES[number], "barplot.jpg", collapse = ""),
+            path = paste0(getwd(), "/barplot"),
             width = fig_width,
             height = fig_height
           )
         } else if (significant_variable_only == F) {
-          ggpubr::ggstripchart(
-            data[["Data_renamed"]],
+          ggpubr::ggbarplot(
+            df,
             x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
+            y = "len",
+            color = NA,
+            fill = "Group",
             palette = ckey,
             order = order,
-            size = size
+            width = width
           ) +
-            ggplot2::stat_summary(
-              fun.y = median,
-              fun.ymin = median,
-              fun.ymax = median,
-              geom = "crossbar",
-              width = 0.4,
-              color = "Black",
-              size = 0.2
+            ggplot2::geom_errorbar(
+              ggplot2::aes(
+                x = Group,
+                ymin = len - SEM,
+                ymax = len + SEM
+              ),
+              width = 0.2,
+              colour = "Black",
+              alpha = 1,
+              size = 0.5
             ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(
@@ -286,8 +298,8 @@ AS_dotplot <- function(data,
             )
 
           ggplot2::ggsave(
-            filename = paste(NAMES[number], "dotplot.png", collapse = ""),
-            path = paste0(getwd(), "/dotplot"),
+            filename = paste(NAMES[number], "barplot.jpg", collapse = ""),
+            path = paste0(getwd(), "/barplot"),
             width = fig_width,
             height = fig_height
           )
@@ -307,7 +319,7 @@ AS_dotplot <- function(data,
       ) %dopar% {
         df <- data_summary(data[["Data_renamed"]],
           varname = colnames(data[["Data_renamed"]])[number],
-          groupnames = c("Group")
+          groupnames = c("ZZZZ")
         )
         df <- df %>% plyr::mutate(ymax = len + SEM)
         colnames(df)[1] <- "Group"
@@ -333,11 +345,10 @@ AS_dotplot <- function(data,
             "-", stat.test[, 2]
           )
         }
-        colnames(p_val_data) <-
-          as.data.frame(strsplit(
-            colnames(p_val_data),
-            "___"
-          ))[1, ]
+        colnames(p_val_data) <- as.data.frame(strsplit(
+          colnames(p_val_data),
+          "___"
+        ))[1, ]
         t1 <-
           as.data.frame(t(as.data.frame(p_val_data[number, ])))
         rownames(t1) <- colnames(p_val_data)
@@ -361,23 +372,26 @@ AS_dotplot <- function(data,
         stat.test <- stat.test[stat.test$p.adj.signif !=
           "NS", ]
         if (length(stat.test > 4)) {
-          ggpubr::ggstripchart(
-            data[["Data_renamed"]],
+          ggpubr::ggbarplot(
+            df,
             x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
+            y = "len",
+            color = NA,
+            fill = "Group",
             palette = ckey,
             order = order,
-            size = size
+            width = width
           ) +
-            ggplot2::stat_summary(
-              fun.y = median,
-              fun.ymin = median,
-              fun.ymax = median,
-              geom = "crossbar",
-              width = 0.4,
-              color = "Black",
-              size = 0.2
+            ggplot2::geom_errorbar(
+              ggplot2::aes(
+                x = Group,
+                ymin = len - SEM,
+                ymax = len + SEM
+              ),
+              width = 0.2,
+              colour = "Black",
+              alpha = 1,
+              size = 0.5
             ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(
@@ -427,29 +441,32 @@ AS_dotplot <- function(data,
               vjust = 0.05
             )
           ggplot2::ggsave(
-            filename = paste(NAMES[number], "dotplot.png", collapse = ""),
-            path = paste0(getwd(), "/dotplot"),
+            filename = paste(NAMES[number], "barplot.jpg", collapse = ""),
+            path = paste0(getwd(), "/barplot"),
             width = fig_width,
             height = fig_height
           )
         } else if (significant_variable_only == F) {
-          ggpubr::ggstripchart(
-            data[["Data_renamed"]],
+          ggpubr::ggbarplot(
+            df,
             x = "Group",
-            y = colnames(data[["Data_renamed"]])[number],
-            color = "Group",
+            y = "len",
+            color = NA,
+            fill = "Group",
             palette = ckey,
             order = order,
-            size = size
+            width = width
           ) +
-            ggplot2::stat_summary(
-              fun.y = median,
-              fun.ymin = median,
-              fun.ymax = median,
-              geom = "crossbar",
-              width = 0.4,
-              color = "Black",
-              size = 0.2
+            ggplot2::geom_errorbar(
+              ggplot2::aes(
+                x = Group,
+                ymin = len - SEM,
+                ymax = len + SEM
+              ),
+              width = 0.2,
+              colour = "Black",
+              alpha = 1,
+              size = 0.5
             ) +
             ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
             ggplot2::labs(
@@ -488,9 +505,10 @@ AS_dotplot <- function(data,
               axis.text.y = ggplot2::element_text(size = Y_lab),
               legend.position = legend_position
             )
+
           ggplot2::ggsave(
-            filename = paste(NAMES[number], "dotplot.png", collapse = ""),
-            path = paste0(getwd(), "/dotplot"),
+            filename = paste(NAMES[number], "barplot.jpg", collapse = ""),
+            path = paste0(getwd(), "/barplot"),
             width = fig_width,
             height = fig_height
           )

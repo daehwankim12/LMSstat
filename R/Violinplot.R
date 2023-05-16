@@ -25,36 +25,37 @@
 #'
 #' @examples data(Data)
 #' Test <- All_stats(Data)
-#' AS_violinplot(Test,
+#' Violinplot(Test,
 #'   asterisk = "Dunn", significant_variable_only = F,
 #'   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
 #' )
-AS_violinplot <- function(data,
-                          asterisk = "t_test",
-                          significant_variable_only = F,
-                          color = c(
-                            "#FF3300",
-                            "#FF6600",
-                            "#FFCC00",
-                            "#99CC00",
-                            "#0066CC",
-                            "#660099"
-                          ),
-                          legend_position = "none",
-                          order = NULL,
-                          tip_length = 0.01,
-                          label_size = 2.88,
-                          step_increase = 0.05,
-                          width = 0.3,
-                          size = 0.5,
-                          fig_width = NA,
-                          fig_height = NA,
-                          X_text = 10,
-                          Y_text = 12,
-                          Y_lab = 10,
-                          T_size = 15,
-                          sig_int = c(0.05, 0.01)) {
-  { # Summary
+Violinplot <- function(data,
+                       asterisk = "t_test",
+                       significant_variable_only = F,
+                       color = c(
+                         "#FF3300",
+                         "#FF6600",
+                         "#FFCC00",
+                         "#99CC00",
+                         "#0066CC",
+                         "#660099"
+                       ),
+                       legend_position = "none",
+                       order = NULL,
+                       tip_length = 0.01,
+                       label_size = 2.88,
+                       step_increase = 0.05,
+                       width = 0.3,
+                       size = 0.5,
+                       fig_width = NA,
+                       fig_height = NA,
+                       X_text = 10,
+                       Y_text = 12,
+                       Y_lab = 10,
+                       T_size = 15,
+                       sig_int = c(0.05, 0.01)) {
+  {
+    # Summary
     ### Plot_data_prep###
     ifelse(!dir.exists(file.path(getwd(), "violinplot")), dir.create(file.path(getwd(), "violinplot")), FALSE)
     data[["Data_renamed"]] <-
@@ -101,7 +102,8 @@ AS_violinplot <- function(data,
           p_val_data[b] <- 1
         }
       }
-    }  }
+    }
+  }
   ### Plots###
   group_not_two <-
     length(unique(data[["Data_renamed"]][["Group"]])) != 2

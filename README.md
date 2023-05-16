@@ -133,26 +133,26 @@ writexl::write_xlsx(list(mysheet = Data), "p_value_result.xlsx")  # Write xlsx w
 
 ```
 # Makes a subdirectory and saves box plots for all the variables
-AS_boxplot(Statfile,asterisk = "u_test") 
+Boxplot(Statfile,asterisk = "u_test") 
 
 # Makes a subdirectory and saves dot plots for all the variables
-AS_dotplot(Statfile,asterisk = "t_test") 
+Dotplot(Statfile,asterisk = "t_test") 
 
 # Makes a subdirectory and saves bar plots for all the variables
-AS_barplot(Statfile,asterisk = "Scheffe")
+Barplot(Statfile,asterisk = "Scheffe")
 
 # Makes a subdirectory and saves violin plots for all the variables
-AS_violinplot(Statfile,asterisk = "Scheffe")
+Violinplot(Statfile,asterisk = "Scheffe")
 ```
 
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**AS_boxplot(Statfile)**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**AS_dotplot(Statfile)**
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Boxplot(Statfile)**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Dotplot(Statfile)**
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/125714687-1908d6eb-b2bd-4e25-8ef0-62c24466c32a.png" width="350" height="250">
 <img src="https://user-images.githubusercontent.com/77651662/125714704-d7dab67e-03c0-4e35-b86a-36723f7c63de.png" width="350" height="250">
 </p>
 
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**AS_barplot(Statfile)**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**AS_violinplot(Statfile)**
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Barplot(Statfile)**&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;**Violinplot(Statfile)**
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/125715925-0878ec77-30bf-4859-8e56-316d98b6d520.jpg" width="350" height="250">
 <img src="https://user-images.githubusercontent.com/77651662/141611647-1bc0f049-fcd1-4cb4-a713-5aa30f24dcb1.png" width="350" height="250">
@@ -227,7 +227,7 @@ SRH(Data)
 
 ```
 # Makes a subdirectory and saves Volcano plots for different combination of groups
-Test <- Allstats(Data)
+Test <- All_stats(Data)
 Volcano(Test, asterisk = "t-test")
 ```
 <p align="center">
@@ -261,7 +261,7 @@ Volcano(Test, asterisk = "t-test")
 
 scaled_data <- D_tran(Data, param = "Auto")
 
-AS_heatmap(scaled_data) #data inheriting from D_tran
+Heatmap(scaled_data) #data inheriting from D_tran
 ```
 <p align="center">
 <img src="https://user-images.githubusercontent.com/77651662/126421942-247031e1-9f90-452f-b5bd-fdf5bdf5c058.PNG" width="750" height="400">

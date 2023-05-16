@@ -29,6 +29,7 @@ Other contributors:
 \itemize{
   \item Jihyun Chun \email{jihyun5311@snu.ac.kr} [contributor]
   \item Seong-Hun Bong \email{b970612@naver.com} [contributor]
+  \item Homin Park \email{pluto99@snu.ac.kr} [contributor]
 }
 
 }

@@ -23,31 +23,31 @@
 #'
 #' @examples data(Data)
 #' data <- D_tran(Data, param = "Auto", save = F)
-#' AS_heatmap(data)
-AS_heatmap <- function(data,
-                       col = c("green", "white", "red"),
-                       col_lim = c(-3, 0, 3),
-                       reverse = F,
-                       distance = "euclidean",
-                       rownames = TRUE,
-                       colnames = FALSE,
-                       Hsize = c(12, 6),
-                       g_legend = "Group",
-                       h_legend = "Intensity",
-                       T_size = 10,
-                       R_size = 7,
-                       C_size = 5,
-                       Gcol = c(
-                         "ASD" = "black",
-                         "HGH" = "red",
-                         "LAC" = "blue",
-                         "LUE" = "grey",
-                         "SDF" = "yellow",
-                         "WEI" = "green"
-                       ),
-                       Title = "Sample Heatmap",
-                       dend_h = 0.5,
-                       a_h = 0.2) {
+#' Heatmap(data)
+Heatmap <- function(data,
+                    col = c("green", "white", "red"),
+                    col_lim = c(-3, 0, 3),
+                    reverse = F,
+                    distance = "euclidean",
+                    rownames = TRUE,
+                    colnames = FALSE,
+                    Hsize = c(12, 6),
+                    g_legend = "Group",
+                    h_legend = "Intensity",
+                    T_size = 10,
+                    R_size = 7,
+                    C_size = 5,
+                    Gcol = c(
+                      "ASD" = "black",
+                      "HGH" = "red",
+                      "LAC" = "blue",
+                      "LUE" = "grey",
+                      "SDF" = "yellow",
+                      "WEI" = "green"
+                    ),
+                    Title = "Sample Heatmap",
+                    dend_h = 0.5,
+                    a_h = 0.2) {
   m_for_heatmap <- as.matrix(data[, 2:ncol(data)])
   colors <- circlize::colorRamp2(col_lim, col)
   if (reverse == T) {
