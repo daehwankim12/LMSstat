@@ -22,12 +22,12 @@ Useful links:
 Authors:
 \itemize{
   \item Hyunho Song \email{shh0409@snu.ac.kr}
+  \item Jihyun Chun \email{jihyun5311@snu.ac.kr}
   \item CHANG-HO KIM \email{demizor3@gmail.com}
 }
 
 Other contributors:
 \itemize{
-  \item Jihyun Chun \email{jihyun5311@snu.ac.kr} [contributor]
   \item Seong-Hun Bong \email{b970612@naver.com} [contributor]
   \item Homin Park \email{pluto99@snu.ac.kr} [contributor]
 }
