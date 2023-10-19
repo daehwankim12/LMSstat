@@ -75,9 +75,16 @@ setwd("~")
 
 Data <- read.csv("statT.csv", check.names = FALSE)
 
+# When uploading an Excel file
+
 install.packages("readxl")
 
 Data <- readxl::read_excel("statT.xlsx", sheet = 2)
+Data <- as.data.frame(Data)
+
+# When your data is large
+
+Data <- data.table::fread("statT.csv", check.names = FALSE)
 Data <- as.data.frame(Data)
 ```
 
@@ -110,7 +117,7 @@ Classification <- read.csv("statT_G.csv", header = F)
 ### Univariate statistics
 
 ```
-Statfile <- All_stats(Data,Adjust_p_value = TRUE, Adjust_method = "BH") # Optimized code using lapply / data.table for faster processing contributed by Daehwan Kim
+Statfile <- All_stats(Data,Adjust_p_value = TRUE, Adjust_method = "BH")
 
 Statfile <- Allstats(Data,Adjust_p_value = TRUE, Adjust_method = "BH") # Previous version using for-loop
 ```

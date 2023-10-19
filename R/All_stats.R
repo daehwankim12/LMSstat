@@ -77,7 +77,8 @@ All_stats <-
       # Degrees of freedom for Welch’s t-test (unequal variances)
       df <-
         (((vars1 / n1) + (vars2 / n2))^2) / ((vars1 / n1)^2 / (n1 - 1) + (vars2 /
-                                                                            n2)^2 / (n2 - 1))
+          n2)^
+          2 / (n2 - 1))
       p_values <- 2 * (1 - pt(abs(t_stats), df = df))
 
       return(p_values)
@@ -123,7 +124,14 @@ All_stats <-
     if (group_nottwo) {
       metabolite_names <- colnames(Data_final)[nmet_seq + 2]
 
-      perform_anova_tests <- function(colname, data) {
+      # Setting up the cluster
+      num_core <- parallel::detectCores() - 1
+      final_cores <- min(5, num_core)
+      cl <- parallel::makeCluster(final_cores)
+      on.exit(parallel::stopCluster(cl))
+
+      perform_anova_tests <- function(colname) {
+        data <- Data_final[, c("Group", colname)]
         formula_str <- as.formula(paste0(colname, " ~ Group"))
         model <- aov(formula_str, data = data)
         anova_res <- summary(model)[[1]]$"Pr(>F)"[1]
@@ -133,15 +141,15 @@ All_stats <-
       }
 
       results <-
-        lapply(metabolite_names, perform_anova_tests, data = Data_final)
+        parallel::parLapply(cl, metabolite_names, perform_anova_tests)
+
       p_anova <- sapply(results, function(x) {
         x$anova_res
       })
       df_anova <- data.frame(p_anova)
-      df_anova_post <-
-        do.call(rbind, lapply(results, function(x) {
-          x$posthoc_res
-        }))
+      df_anova_post <- do.call(rbind, lapply(results, function(x) {
+        x$posthoc_res
+      }))
 
       print("Anova & PostHoc has finished")
 
@@ -150,41 +158,34 @@ All_stats <-
       kw_results <-
         matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
 
-      # Pre-generate the formulas
-      formulas <-
-        sapply(metabolite_names, function(colname) {
-          as.formula(paste0(colname, " ~ Group"))
-        })
-
-      perform_posthoc_tests <- function(formula, data) {
-        dunn_res <- FSA::dunnTest(formula, data = data, method = "none")
+      perform_posthoc_tests <- function(colname) {
+        formula <- as.formula(paste0(colname, " ~ Group"))
+        data_subset <- Data_final[, c("Group", colname)]
+        dunn_res <-
+          FSA::dunnTest(formula, data = data_subset, method = "none")
         post_pvals <- dunn_res[["res"]][["P.unadj"]]
         adjusted_pvals <- p.adjust(post_pvals, method = "BH")
         list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
       }
 
+      # Use parLapply to perform the post-hoc tests in parallel
       results_kw_posthoc <-
-        mapply(
-          perform_posthoc_tests,
-          formulas,
-          MoreArgs = list(data = Data_final),
-          SIMPLIFY = FALSE
-        )
+        parallel::parLapply(cl, metabolite_names, perform_posthoc_tests)
 
       # Extract the Kruskal-Wallis results and put them into a dataframe
       df_kw <- data.frame(p_kw = kw_results$pvalue)
 
       # Extract the adjusted p-values from the posthoc tests and combine them into a dataframe
-      df_kw_post <-
-        do.call(
-          rbind,
-          lapply(results_kw_posthoc, function(x) {
-            x$adjusted_pvals
-          })
-        )
+      df_kw_post <- do.call(
+        rbind,
+        lapply(results_kw_posthoc, function(x) {
+          x$adjusted_pvals
+        })
+      )
 
       print("Kruskal Wallis & PostHoc has finished")
     }
+
 
     #### finalization ####
     # Finalize the results of the statistical tests and rename the rows and columns of the data frames
@@ -194,8 +195,8 @@ All_stats <-
 
     for (i in seq_len(choose(length(groups_split), 2))) {
       Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-                                  combn(names(groups_split), 2)[2, i],
-                                  sep = "-"
+        combn(names(groups_split), 2)[2, i],
+        sep = "-"
       ))
     }
 
@@ -303,8 +304,7 @@ All_stats <-
     Final$Result <- Result
     if (group_nottwo) {
       Final$Anova <- df_anova
-      Final$Anova_PostHoc <-
-        df_anova_post
+      Final$Anova_PostHoc <- df_anova_post
       Final$KW <- df_kw
       Final$Dunn <- df_kw_post
       Final$t_test <- as.data.frame(df_ttest)

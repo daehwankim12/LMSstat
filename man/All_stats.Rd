@@ -2,12 +2,15 @@
 % Please edit documentation in R/All_stats.R
 \name{All_stats}
 \alias{All_stats}
-\title{Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc), Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR}
+\title{Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc),
+Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR}
 \usage{
 All_stats(Data, Adjust_p_value = TRUE, Adjust_method = "BH")
 }
 \arguments{
-\item{Data}{csv file with Header as False First column with Sample Second column with Multilevel(Mixomics) so that it can be compatible with other multivariate statistics Third column with Group information. Rest of the columns are the metabolites to be tested.}
+\item{Data}{csv file with Header as False First column with Sample Second column
+with Multilevel(Mixomics) so that it can be compatible with other multivariate
+statistics Third column with Group information. Rest of the columns are the metabolites to be tested.}
 
 \item{Adjust_p_value}{Set True if FDR adjustments are to be made. If not set False}
 
@@ -17,7 +20,8 @@ All_stats(Data, Adjust_p_value = TRUE, Adjust_method = "BH")
 List including Result Matrix of p-values, converted datas.
 }
 \description{
-Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc), Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
+Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc),
+Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
 }
 \examples{
 data("Data")

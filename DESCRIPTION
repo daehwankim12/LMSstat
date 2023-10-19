@@ -32,7 +32,6 @@ Imports:
     scales,
     ggpubr,
     mixOmics,
-    ecoflux,
     vegan,
     tidyverse,
     pROC,
