@@ -92,7 +92,7 @@ All_stats <-
       combn(names(groups_split), 2, simplify = FALSE)
 
     # Perform vectorized t-tests for each combination of groups
-    result_list_t <- parallel::parLapply(group_combinations, function(combo) {
+    result_list_t <- parallel::parLapply(cl, group_combinations, function(combo) {
       mat1 <- group_matrices[[combo[1]]]
       mat2 <- group_matrices[[combo[2]]]
       vectorized_t_test(mat1, mat2)
@@ -112,7 +112,7 @@ All_stats <-
     }
 
     # Perform vectorized Wilcoxon tests for each combination of groups
-    result_list_u <- parallel::parLapply(group_combinations, function(combo) {
+    result_list_u <- parallel::parLapply(cl, group_combinations, function(combo) {
       mat1 <- group_matrices[[combo[1]]]
       mat2 <- group_matrices[[combo[2]]]
       vectorized_u_test(mat1, mat2)
