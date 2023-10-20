@@ -40,7 +40,8 @@ All_stats <-
 
     # Convert the data frame to a data table
     Data_final <- data.table::as.data.table(Data)
-    Data_final_raw <- Data_final[, -c("Sample", "Group")]
+    cols_to_keep <- colnames(Data_final)[!(colnames(Data_final) %in% c("Sample", "Group"))]
+    Data_final_raw <- Data_final[, ..cols_to_keep]
 
     # Convert the "Group" column to a factor
     Data_final[, Group := as.factor(as.character(Group))]
