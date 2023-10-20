@@ -84,7 +84,7 @@ Data <- as.data.frame(Data)
 
 # When your data is large
 
-Data <- data.table::fread("statT.csv", check.names = FALSE)
+Data <- data.table::fread("statT.csv", check.names = FALSE, header = TRUE)
 Data <- as.data.frame(Data)
 ```
 

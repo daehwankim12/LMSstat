@@ -46,4 +46,6 @@ Imports:
     doParallel,
     doSNOW,
     matrixStats,
-    matrixTests
+    matrixTests,
+    ecoflux
+Remotes: jpshanno/ecoflux

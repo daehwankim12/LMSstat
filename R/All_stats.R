@@ -51,11 +51,8 @@ All_stats <-
     # Check if there are more than two groups
     group_nottwo <- length(unique(Data_final$Group)) > 2
 
-    variances <-
-      lapply(groups_split, function(group) {
-        lapply(group, var)
-      })
     Data_final <- as.data.frame(Data_final)
+    colnames(Data_final) <- c("Sample", "Group", paste0("V", nmet_seq))
 
     #### ttest ####
     # Generate a matrix for each group, where each column is a variable (assuming groups_split is a list of data.frames)
@@ -130,18 +127,19 @@ All_stats <-
       cl <- parallel::makeCluster(final_cores)
       on.exit(parallel::stopCluster(cl))
 
-      perform_anova_tests <- function(colname) {
-        data <- Data_final[, c("Group", colname)]
+      perform_anova_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
         formula_str <- as.formula(paste0(colname, " ~ Group"))
-        model <- aov(formula_str, data = data)
+        model <- aov(formula_str, data = data_subset)
         anova_res <- summary(model)[[1]]$"Pr(>F)"[1]
-        posthoc_res <-
-          DescTools::PostHocTest(model, method = "scheffe")$Group[, 4]
+        posthoc_res <- DescTools::PostHocTest(model, method = "scheffe")$Group[, 4]
         list(anova_res = anova_res, posthoc_res = posthoc_res)
       }
 
-      results <-
-        parallel::parLapply(cl, metabolite_names, perform_anova_tests)
+      # Subset the data for each metabolite and pass to the worker nodes
+      results <- parallel::parLapply(cl, lapply(metabolite_names, function(col) {
+        Data_final[, c("Group", col)]
+      }), perform_anova_tests)
 
       p_anova <- sapply(results, function(x) {
         x$anova_res
@@ -153,39 +151,29 @@ All_stats <-
 
       print("Anova & PostHoc has finished")
 
-      #### KruskalWallisPostHoc ####
-      # Use matrixTests to perform Kruskal-Wallis tests for each column
-      kw_results <-
-        matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
+      # The same principle is applied to the Kruskal Wallis tests
+      kw_results <- matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
 
-      perform_posthoc_tests <- function(colname) {
+      perform_posthoc_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
         formula <- as.formula(paste0(colname, " ~ Group"))
-        data_subset <- Data_final[, c("Group", colname)]
-        dunn_res <-
-          FSA::dunnTest(formula, data = data_subset, method = "none")
+        dunn_res <- FSA::dunnTest(formula, data = data_subset, method = "none")
         post_pvals <- dunn_res[["res"]][["P.unadj"]]
         adjusted_pvals <- p.adjust(post_pvals, method = "BH")
         list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
       }
 
-      # Use parLapply to perform the post-hoc tests in parallel
-      results_kw_posthoc <-
-        parallel::parLapply(cl, metabolite_names, perform_posthoc_tests)
+      results_kw_posthoc <- parallel::parLapply(cl, lapply(metabolite_names, function(col) {
+        Data_final[, c("Group", col)]
+      }), perform_posthoc_tests)
 
-      # Extract the Kruskal-Wallis results and put them into a dataframe
       df_kw <- data.frame(p_kw = kw_results$pvalue)
-
-      # Extract the adjusted p-values from the posthoc tests and combine them into a dataframe
-      df_kw_post <- do.call(
-        rbind,
-        lapply(results_kw_posthoc, function(x) {
-          x$adjusted_pvals
-        })
-      )
+      df_kw_post <- do.call(rbind, lapply(results_kw_posthoc, function(x) {
+        x$adjusted_pvals
+      }))
 
       print("Kruskal Wallis & PostHoc has finished")
     }
-
 
     #### finalization ####
     # Finalize the results of the statistical tests and rename the rows and columns of the data frames
