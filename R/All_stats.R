@@ -40,7 +40,16 @@ All_stats <-
 
     # Convert the data frame to a data table
     Data_final <- data.table::as.data.table(Data)
+<<<<<<< 56be4249c9a0a3d5f4230d8076f08f6bcc238bf9
     Data_final_raw <- Data_final[, -c("Sample", "Group")]
+=======
+<<<<<<< eb49eb2c40b6670dcc98a17d50c5c556ec8e7e4d
+    cols_to_keep <- colnames(Data_final)[!(colnames(Data_final) %in% c("Sample", "Group"))]
+    Data_final_raw <- Data_final[, ..cols_to_keep]
+=======
+    Data_final_raw <- Data_final[, setdiff(names(Data_final), c("Sample", "Group")), with = FALSE]
+>>>>>>> Bug fix
+>>>>>>> Bug fix
 
     # Convert the "Group" column to a factor
     Data_final[, Group := as.factor(as.character(Group))]
