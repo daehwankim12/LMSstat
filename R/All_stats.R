@@ -40,19 +40,10 @@ All_stats <-
 
     # Convert the data frame to a data table
     Data_final <- data.table::as.data.table(Data)
-<<<<<<< 56be4249c9a0a3d5f4230d8076f08f6bcc238bf9
-    Data_final_raw <- Data_final[, -c("Sample", "Group")]
-=======
-<<<<<<< eb49eb2c40b6670dcc98a17d50c5c556ec8e7e4d
-    cols_to_keep <- colnames(Data_final)[!(colnames(Data_final) %in% c("Sample", "Group"))]
-    Data_final_raw <- Data_final[, ..cols_to_keep]
-=======
     Data_final_raw <- Data_final[, setdiff(names(Data_final), c("Sample", "Group")), with = FALSE]
->>>>>>> Bug fix
->>>>>>> Bug fix
 
     # Convert the "Group" column to a factor
-    Data_final[, Group := as.factor(as.character(Group))]
+    data.table::set(Data_final, j = "Group", value = as.factor(as.character(Data_final$Group)))
 
     # Split the data table by group
     groups_split <- split(Data_final_raw, Data_final$Group)
@@ -62,6 +53,12 @@ All_stats <-
 
     Data_final <- as.data.frame(Data_final)
     colnames(Data_final) <- c("Sample", "Group", paste0("V", nmet_seq))
+
+    # Setting up the cluster
+    num_core <- parallel::detectCores() - 1
+    final_cores <- min(5, num_core)
+    cl <- parallel::makeCluster(final_cores)
+    on.exit(parallel::stopCluster(cl))
 
     #### ttest ####
     # Generate a matrix for each group, where each column is a variable (assuming groups_split is a list of data.frames)
@@ -95,7 +92,7 @@ All_stats <-
       combn(names(groups_split), 2, simplify = FALSE)
 
     # Perform vectorized t-tests for each combination of groups
-    result_list_t <- lapply(group_combinations, function(combo) {
+    result_list_t <- parallel::parLapply(group_combinations, function(combo) {
       mat1 <- group_matrices[[combo[1]]]
       mat2 <- group_matrices[[combo[2]]]
       vectorized_t_test(mat1, mat2)
@@ -115,7 +112,7 @@ All_stats <-
     }
 
     # Perform vectorized Wilcoxon tests for each combination of groups
-    result_list_u <- lapply(group_combinations, function(combo) {
+    result_list_u <- parallel::parLapply(group_combinations, function(combo) {
       mat1 <- group_matrices[[combo[1]]]
       mat2 <- group_matrices[[combo[2]]]
       vectorized_u_test(mat1, mat2)
@@ -129,12 +126,6 @@ All_stats <-
 
     if (group_nottwo) {
       metabolite_names <- colnames(Data_final)[nmet_seq + 2]
-
-      # Setting up the cluster
-      num_core <- parallel::detectCores() - 1
-      final_cores <- min(5, num_core)
-      cl <- parallel::makeCluster(final_cores)
-      on.exit(parallel::stopCluster(cl))
 
       perform_anova_tests <- function(data_subset) {
         colname <- names(data_subset)[2]
