@@ -170,12 +170,17 @@ All_stats <-
         adjusted_pvals <- p.adjust(post_pvals, method = "BH")
         list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
       }
-
       results_kw_posthoc <-
-        parallel::parLapply(cl, metabolite_names, function(col) {
+        lapply(metabolite_names, function(col) {
           subset_data <- Data_final[, c("Group", col)]
           perform_posthoc_tests(subset_data)
         })
+
+      # results_kw_posthoc <-
+      #   parallel::parLapply(cl, metabolite_names, function(col) {
+      #     subset_data <- Data_final[, c("Group", col)]
+      #     perform_posthoc_tests(subset_data)
+      #   })
 
       df_kw <- data.frame(p_kw = kw_results$pvalue)
       df_kw_post <-
