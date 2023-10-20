@@ -40,7 +40,7 @@ All_stats <-
 
     # Convert the data frame to a data table
     Data_final <- data.table::as.data.table(Data)
-    Data_final_raw <- Data_final[, !c("Sample", "Group"), with = FALSE]
+    Data_final_raw <- Data_final[, setdiff(names(Data_final), c("Sample", "Group")), with = FALSE]
 
     # Convert the "Group" column to a factor
     data.table::set(Data_final, j = "Group", value = as.factor(as.character(Data_final$Group)))
