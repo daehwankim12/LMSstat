@@ -6,6 +6,7 @@
 #' statistics Third column with Group information. Rest of the columns are the metabolites to be tested.
 #' @param Adjust_p_value Set True if FDR adjustments are to be made. If not set False
 #' @param Adjust_method adjustment methods frequently used. "holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"
+#' @param parallel Set True if you want to use parallel computing.
 #'
 #' @return List including Result Matrix of p-values, converted datas.
 #' @export
@@ -16,7 +17,8 @@
 All_stats <-
   function(Data,
            Adjust_p_value = TRUE,
-           Adjust_method = "BH") {
+           Adjust_method = "BH",
+           parallel = FALSE) {
     # Rename the first and second columns to "Group" and "Sample"
     colnames(Data)[1:2] <- c("Sample", "Group")
 
@@ -56,11 +58,21 @@ All_stats <-
     colnames(Data_final) <-
       c("Sample", "Group", paste0("V", nmet_seq))
 
-    # Setting up the cluster
-    num_core <- parallel::detectCores() - 1
-    final_cores <- min(5, num_core)
-    cl <- parallel::makeCluster(final_cores)
-    on.exit(parallel::stopCluster(cl))
+    if (parallel) {
+      num_core <- parallel::detectCores() - 1
+      num_col <- ncol(Data_final)
+      if (num_col < 1000) {
+        parallel <- FALSE
+      } else if (num_col < 5000) {
+        cl <- parallel::makeCluster(3)
+      } else {
+        cl <- parallel::makeCluster(min(5, num_core))
+      }
+      if (parallel) {
+        on.exit(parallel::stopCluster(cl))
+      }
+    }
+
 
     #### ttest ####
     # Generate a matrix for each group, where each column is a variable (assuming groups_split is a list of data.frames)
@@ -94,13 +106,22 @@ All_stats <-
       combn(names(groups_split), 2, simplify = FALSE)
 
     # Perform vectorized t-tests for each combination of groups
-    result_list_t <-
-      parallel::parLapply(cl, group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_t_test(mat1, mat2)
-      })
 
+    if (parallel) {
+      result_list_t <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
+    } else {
+      result_list_t <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
+    }
 
     # Convert results into desired format (data frame)
     df_ttest <- t(data.frame(do.call(rbind, result_list_t)))
@@ -115,12 +136,23 @@ All_stats <-
     }
 
     # Perform vectorized Wilcoxon tests for each combination of groups
-    result_list_u <-
-      parallel::parLapply(cl, group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_u_test(mat1, mat2)
-      })
+
+    if (parallel) {
+      result_list_u <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
+    } else {
+      result_list_u <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
+    }
+
 
     # Convert Wilcoxon test results into desired format (data frame)
     df_utest <- t(data.frame(do.call(rbind, result_list_u)))
@@ -141,11 +173,21 @@ All_stats <-
         list(anova_res = anova_res, posthoc_res = posthoc_res)
       }
       # Subset the data for each metabolite and pass to the worker nodes
-      results <-
-        parallel::parLapply(cl, metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_anova_tests(subset_data)
-        })
+
+      if (parallel) {
+        results <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
+      } else {
+        results <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
+      }
+
 
       p_anova <- sapply(results, function(x) {
         x$anova_res
@@ -170,17 +212,20 @@ All_stats <-
         adjusted_pvals <- p.adjust(post_pvals, method = "BH")
         list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
       }
-      results_kw_posthoc <-
-        lapply(metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_posthoc_tests(subset_data)
-        })
 
-      # results_kw_posthoc <-
-      #   parallel::parLapply(cl, metabolite_names, function(col) {
-      #     subset_data <- Data_final[, c("Group", col)]
-      #     perform_posthoc_tests(subset_data)
-      #   })
+      if (parallel) {
+        results_kw_posthoc <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
+      } else {
+        results_kw_posthoc <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
+      }
 
       df_kw <- data.frame(p_kw = kw_results$pvalue)
       df_kw_post <-

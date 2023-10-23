@@ -76,16 +76,10 @@ setwd("~")
 Data <- read.csv("statT.csv", check.names = FALSE)
 
 # When uploading an Excel file
-
-install.packages("readxl")
-
-Data <- readxl::read_excel("statT.xlsx", sheet = 2)
-Data <- as.data.frame(Data)
+Data <- as.data.frame(readxl::read_excel("statT.xlsx", sheet = 2))
 
 # When your data is large
-
-Data <- data.table::fread("statT.csv", check.names = FALSE, header = TRUE)
-Data <- as.data.frame(Data)
+Data <- as.data.frame(data.table::fread("statT.csv", check.names = FALSE, header = TRUE))
 ```
 
 # Datafile needs to follow the following format
@@ -101,7 +95,7 @@ Data <- as.data.frame(Data)
 * PERMANOVA
 
 ```
-#Sample Data provided within the package
+# Sample Data provided within the package
 data("Classification")
 
 # Uploading your own Data
@@ -117,7 +111,8 @@ Classification <- read.csv("statT_G.csv", header = F)
 ### Univariate statistics
 
 ```
-Statfile <- All_stats(Data,Adjust_p_value = TRUE, Adjust_method = "BH")
+# Use `parallel = TRUE` for datasets with more than 1000 metabolites.
+Statfile <- All_stats(Data,Adjust_p_value = TRUE, Adjust_method = "BH", parallel = FALSE) 
 
 Statfile <- Allstats(Data,Adjust_p_value = TRUE, Adjust_method = "BH") # Previous version using for-loop
 ```
