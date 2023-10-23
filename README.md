@@ -79,7 +79,7 @@ Data <- read.csv("statT.csv", check.names = FALSE)
 Data <- as.data.frame(readxl::read_excel("statT.xlsx", sheet = 2))
 
 # When your data is large
-Data <- as.data.frame(data.table::fread("statT.csv", check.names = FALSE, header = TRUE))
+Data <- as.data.frame(data.table::fread("statT.csv", check.names = FALSE, header = TRUE, integer64 = "double"))
 ```
 
 # Datafile needs to follow the following format
@@ -130,6 +130,8 @@ write.csv(Statfile[["Result"]], "p_value_result.csv")  # Write csv with all the 
 install.packages("writexl")
 
 writexl::write_xlsx(list(mysheet = Data), "p_value_result.xlsx")  # Write xlsx with all the p-value included
+
+data.table::fwrite(as.data.frame(Statfile[["Result"]]), "p_value_result.csv", row.names = TRUE)
 ```
 ### Plots
 
