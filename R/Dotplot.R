@@ -177,7 +177,7 @@ Dotplot <- function(data,
               color = "Black",
               size = 0.2
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -249,7 +249,7 @@ Dotplot <- function(data,
               color = "Black",
               size = 0.2
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -381,7 +381,7 @@ Dotplot <- function(data,
               color = "Black",
               size = 0.2
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -453,7 +453,7 @@ Dotplot <- function(data,
               color = "Black",
               size = 0.2
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,

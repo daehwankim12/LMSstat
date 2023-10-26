@@ -12,21 +12,20 @@
 D_tran <- function(data, param = "None", save = FALSE) {
   data <- data %>% dplyr::arrange(data$Group)
   rownames(data) <- data[, 1]
-  data <- data[, -1]
-  data[, 2:ncol(data)] <-
-    sapply(data[, 2:ncol(data)], function(x) {
+  data[, 3:ncol(data)] <-
+    sapply(data[, 3:ncol(data)], function(x) {
       as.numeric(x)
     })
 
   if (param == "None") {
     data <- data
   } else if (param == "Auto") {
-    data[, 2:ncol(data)] <- scale(data[, 2:ncol(data)], scale = T)
+    data[, 3:ncol(data)] <- scale(data[, 3:ncol(data)], scale = T)
   } else if (param == "log10") {
-    data[, 2:ncol(data)] <- log10(data[, 2:ncol(data)])
+    data[, 3:ncol(data)] <- log10(data[, 3:ncol(data)])
   } else if (param == "Pareto") {
-    data[, 2:ncol(data)] <-
-      scale(data[, 2:ncol(data)], scale = sqrt(sapply(data[, 2:ncol(data)], sd)))
+    data[, 3:ncol(data)] <-
+      scale(data[, 3:ncol(data)], scale = sqrt(sapply(data[, 3:ncol(data)], sd)))
   }
   if (save) {
     write.csv(data, paste0("datafile_scaled_to_", param, ".csv"))

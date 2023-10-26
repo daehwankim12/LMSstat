@@ -173,7 +173,7 @@ Violinplot <- function(data,
               order = order,
               width = width
             ) +
-              ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+              ggplot2::scale_y_continuous(label = scientific_10x) +
               ggplot2::labs(
                 title = NAMES[number],
                 x = NULL,
@@ -238,7 +238,7 @@ Violinplot <- function(data,
               order = order,
               width = width
             ) +
-              ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+              ggplot2::scale_y_continuous(label = scientific_10x) +
               ggplot2::labs(
                 title = NAMES[number],
                 x = NULL,
@@ -362,7 +362,7 @@ Violinplot <- function(data,
               order = order,
               width = width
             ) +
-              ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+              ggplot2::scale_y_continuous(label = scientific_10x) +
               ggplot2::labs(
                 title = NAMES[number],
                 x = NULL,
@@ -426,7 +426,7 @@ Violinplot <- function(data,
               order = order,
               width = width
             ) +
-              ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+              ggplot2::scale_y_continuous(label = scientific_10x) +
               ggplot2::labs(
                 title = NAMES[number],
                 x = NULL,

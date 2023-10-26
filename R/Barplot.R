@@ -184,7 +184,7 @@ Barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -259,7 +259,7 @@ Barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -393,7 +393,7 @@ Barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -468,7 +468,7 @@ Barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
