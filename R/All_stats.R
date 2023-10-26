@@ -350,6 +350,7 @@ All_stats <-
     # and the results of the ANOVA, ANOVA post-hoc, Kruskal-Wallis, and Kruskal-Wallis post-hoc tests (if applicable)
     Final <- list()
     Final$Data <- Data_ori
+    Final$Data_renamed <- Data_final
     Final$Result <- Result
     if (group_nottwo) {
       Final$Anova <- df_anova
