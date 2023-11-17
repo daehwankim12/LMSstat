@@ -48,7 +48,7 @@ Heatmap <- function(data,
                     Title = "Sample Heatmap",
                     dend_h = 0.5,
                     a_h = 0.2) {
-  m_for_heatmap <- as.matrix(data[, 2:ncol(data)])
+  m_for_heatmap <- as.matrix(data[, 3:ncol(data)])
   colors <- circlize::colorRamp2(col_lim, col)
   if (reverse == T) {
     m_for_heatmap <- t(m_for_heatmap)
