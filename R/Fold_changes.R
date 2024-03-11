@@ -15,6 +15,8 @@
 #' @export
 Fold_changes <- function(data) {
   # Ensure the second column is used to order the data and derive groups
+  data_col_names <- colnames(data)
+
   sorted_indices <- order(data[[2]])
   data <- data[sorted_indices, ]
 
@@ -55,11 +57,17 @@ Fold_changes <- function(data) {
     return(mat)
   }
 
-  fc_matrix <- rename_columns(fc_matrix, " / ", " fold change")
-  pval_matrix <- rename_columns(pval_matrix, " - ", " p-value")
+  fc_matrix <- t(rename_columns(fc_matrix, " / ", " fold change"))
+  pval_matrix <- t(rename_columns(pval_matrix, " - ", " p-value"))
+
+  fc_matrix <- cbind(row.names(fc_matrix), row.names(fc_matrix), fc_matrix)
+  pval_matrix <- cbind(row.names(pval_matrix), row.names(pval_matrix), pval_matrix)
+
+  colnames(fc_matrix) <- data_col_names
+  colnames(pval_matrix) <- data_col_names
 
   # Bind the results together
-  result <- cbind(data, fc_matrix, pval_matrix)
+  result <- rbind(data, fc_matrix, pval_matrix)
 
   return(result)
 }
