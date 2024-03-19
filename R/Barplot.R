@@ -24,35 +24,36 @@
 #'
 #' @examples data("Data")
 #' Test <- All_stats(Data)
-#' AS_barplot(Test,
+#' Barplot(Test,
 #'   asterisk = "Dunn", significant_variable_only = FALSE,
 #'   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
 #' )
-AS_barplot <- function(data,
-                       asterisk = "t_test",
-                       significant_variable_only = F,
-                       color = c(
-                         "#FF3300",
-                         "#FF6600",
-                         "#FFCC00",
-                         "#99CC00",
-                         "#0066CC",
-                         "#660099"
-                       ),
-                       legend_position = "none",
-                       order = NULL,
-                       tip_length = 0.01,
-                       label_size = 2.88,
-                       step_increase = 0.05,
-                       width = 0.3,
-                       fig_width = NA,
-                       fig_height = NA,
-                       X_text = 10,
-                       Y_text = 12,
-                       Y_lab = 10,
-                       T_size = 15,
-                       sig_int = c(0.05, 0.01)) {
-  { # Summary
+Barplot <- function(data,
+                    asterisk = "t_test",
+                    significant_variable_only = F,
+                    color = c(
+                      "#FF3300",
+                      "#FF6600",
+                      "#FFCC00",
+                      "#99CC00",
+                      "#0066CC",
+                      "#660099"
+                    ),
+                    legend_position = "none",
+                    order = NULL,
+                    tip_length = 0.01,
+                    label_size = 2.88,
+                    step_increase = 0.05,
+                    width = 0.3,
+                    fig_width = NA,
+                    fig_height = NA,
+                    X_text = 10,
+                    Y_text = 12,
+                    Y_lab = 10,
+                    T_size = 15,
+                    sig_int = c(0.05, 0.01)) {
+  {
+    # Summary
     ### Plot_data_prep###
     ifelse(!dir.exists(file.path(getwd(), "barplot")), dir.create(file.path(getwd(), "barplot")), FALSE)
     data[["Data_renamed"]] <-
@@ -97,7 +98,8 @@ AS_barplot <- function(data,
           p_val_data[b] <- 1
         }
       }
-    }  }
+    }
+  }
   ### Plots###
   group_not_two <-
     length(unique(data[["Data_renamed"]][["ZZZZ"]])) != 2
@@ -182,7 +184,7 @@ AS_barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -257,7 +259,7 @@ AS_barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -391,7 +393,7 @@ AS_barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,
@@ -466,7 +468,7 @@ AS_barplot <- function(data,
               alpha = 1,
               size = 0.5
             ) +
-            ggplot2::scale_y_continuous(label = ecoflux::scientific_10x) +
+            ggplot2::scale_y_continuous(label = scientific_10x) +
             ggplot2::labs(
               title = NAMES[number],
               x = NULL,

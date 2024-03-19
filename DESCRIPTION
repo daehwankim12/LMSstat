@@ -1,10 +1,10 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.1.1
+Version: 1.1.3
 Authors@R: c(
     person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
     person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
-    person("Jihyun", "Chun", email = "jihyun5311@snu.ac.kr", role = c("ctb")),
+    person("Jihyun", "Chun", email = "jihyun5311@snu.ac.kr", role = c("aut")),
     person("Seong-Hun", "Bong", email = "b970612@naver.com", role = c("ctb")),
     person("Homin", "Park", email = "pluto99@snu.ac.kr", role = c("ctb")),
     person("CHANG-HO", "KIM", email = "demizor3@gmail.com", role = "aut"))
@@ -16,9 +16,13 @@ LazyData: true
 URL: https://github.com/daehwankim12/LMSstat
 BugReports: https://github.com/daehwankim12/LMSstat/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 License: MIT + file LICENSE
 biocViews:
+Depends: 
+    R (>= 4.3.0),
+    dplyr,
+    foreach
 Imports: 
     DescTools,
     FSA,
@@ -28,7 +32,6 @@ Imports:
     scales,
     ggpubr,
     mixOmics,
-    ecoflux,
     vegan,
     plyr,
     dplyr,
@@ -43,10 +46,6 @@ Imports:
     rcompanion,
     data.table,
     doParallel,
-    doSNOW
-Depends:
-    R (>= 4.2.2),
-    plyr,
-    dplyr,
-    foreach
-Remotes: jpshanno/ecoflux
+    doSNOW,
+    matrixStats,
+    matrixTests
