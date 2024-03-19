@@ -1,8 +1,12 @@
-#' Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc), Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
+#' Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc),
+#' Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
 #'
-#' @param Data csv file with Header as False First column with Sample Second column with Multilevel(Mixomics) so that it can be compatible with other multivariate statistics Third column with Group information. Rest of the columns are the metabolites to be tested.
+#' @param Data csv file with Header as False First column with Sample Second column
+#' with Multilevel(Mixomics) so that it can be compatible with other multivariate
+#' statistics Third column with Group information. Rest of the columns are the metabolites to be tested.
 #' @param Adjust_p_value Set True if FDR adjustments are to be made. If not set False
 #' @param Adjust_method adjustment methods frequently used. "holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"
+#' @param parallel Set True if you want to use parallel computing.
 #'
 #' @return List including Result Matrix of p-values, converted datas.
 #' @export
@@ -13,224 +17,222 @@
 All_stats <-
   function(Data,
            Adjust_p_value = TRUE,
-           Adjust_method = "BH") {
-    # If the dataset has a column named "group", rename it to "Group"
-    if ("group" %in% colnames(Data)) {
-      Data <- dplyr::rename(Data, "Group" = "group")
-    }
-
-    # If the dataset has a column named "sample", rename it to "Sample"
-    if ("sample" %in% colnames(Data)) {
-      Data <- dplyr::rename(Data, "Sample" = "sample")
-    }
+           Adjust_method = "BH",
+           parallel = FALSE) {
+    # Rename the first and second columns to "Group" and "Sample"
+    colnames(Data)[1:2] <- c("Sample", "Group")
 
     # Convert the "Group" column to character type
     Data$Group <- as.character(Data$Group)
 
     # Sort the data by "Group"
-    Data <- Data %>% dplyr::arrange(Data$Group)
+    Data <- dplyr::arrange(Data, Data$Group)
+    Data_ori <- Data
 
-    # Create a new data frame with modified column names
-    Data_renamed <- Data
+    # Modify column names and convert variables to numeric
     nmet <- ncol(Data) - 2 # number of variables (metabolites)
     nmet_seq <-
-      seq_len(nmet) + 2 # sequence of column indices for variables
-    colnames(Data_renamed) <-
-      c(colnames(Data[1:2]), paste0("V", 1:nmet))
-    rownames(Data_renamed) <-
-      Data[, 1] # set row names to sample names
+      seq_len(nmet) # sequence of column indices for variables
 
-    # Extract the variables (metabolites) as a separate data frame
-    Data_renamed_raw <- Data_renamed[, -c(1, 2)]
 
-    # Convert the variables to numeric type
-    Data_renamed_raw <- apply(Data_renamed_raw, 2, as.numeric)
+    # Convert relevant columns to numeric using lapply (vectorization)
+    cols_to_convert <- 3:ncol(Data)
+    Data[, cols_to_convert] <-
+      lapply(Data[, cols_to_convert], as.numeric)
 
-    # Combine the variables with sample names and group information
-    Data_final <- cbind(Data[, 1:2], Data_renamed_raw)
-
-    # Convert the combined data frame to a data table
-    Data_final <- data.table::as.data.table(Data_final)
+    # Convert the data frame to a data table
+    Data_final <- data.table::as.data.table(Data)
+    Data_final_raw <-
+      Data_final[, setdiff(names(Data_final), c("Sample", "Group")), with = FALSE]
 
     # Convert the "Group" column to a factor
-    Data_final$Group <- as.factor(as.character(Data_final$Group))
+    data.table::set(Data_final, j = "Group", value = as.factor(as.character(Data_final$Group)))
 
     # Split the data table by group
-    groups_split <-
-      split(Data_final, Data_final$Group)
+    groups_split <- split(Data_final_raw, Data_final$Group)
 
     # Check if there are more than two groups
-    group_nottwo <-
-      length(unique(Data_final$Group)) > 2
+    group_nottwo <- length(unique(Data_final$Group)) > 2
 
-    # Remove the intermediate data frame
-    rm(Data_renamed_raw)
+    Data_final <- as.data.frame(Data_final)
+    colnames(Data_final) <-
+      c("Sample", "Group", paste0("V", nmet_seq))
 
-    #### ttest ####
-
-    # Function to perform t-test on two groups for a given variable (i)
-    split_t_test <- function(x, i) {
-      # If both groups have zero variance, return p-value of 1
-      if (var(groups_split[[x[1]]][[i]]) == 0 &&
-        var(groups_split[[x[2]]][[i]]) == 0) {
-        1
+    if (parallel) {
+      num_core <- parallel::detectCores() - 1
+      num_col <- ncol(Data_final)
+      if (num_col < 1000) {
+        parallel <- FALSE
+      } else if (num_col < 5000) {
+        cl <- parallel::makeCluster(3)
       } else {
-        # Otherwise, perform t-test and return p-value
-        t.test(groups_split[[x[1]]][[i]], groups_split[[x[2]]][[i]])[["p.value"]]
+        cl <- parallel::makeCluster(min(5, num_core))
+      }
+      if (parallel) {
+        on.exit(parallel::stopCluster(cl))
       }
     }
 
-    # Perform t-test on all pairs of groups for each variable
-    res_ttest <-
-      lapply((nmet_seq), function(i) {
-        as.list(combn(names(groups_split), 2, split_t_test, i = i))
-      })
 
-    # Bind the results into a single data frame
-    df_ttest <-
-      data.table::rbindlist(res_ttest)
-    df_ttest <- data.frame(df_ttest)
+    #### ttest ####
+    # Generate a matrix for each group, where each column is a variable (assuming groups_split is a list of data.frames)
+    group_matrices <- lapply(groups_split, as.matrix)
 
-    # Print message
+    # Helper function to perform vectorized t-test between two matrices with unequal variances
+    vectorized_t_test <- function(mat1, mat2) {
+      n1 <- nrow(mat1)
+      n2 <- nrow(mat2)
+
+      means1 <- colMeans(mat1)
+      means2 <- colMeans(mat2)
+      vars1 <- apply(mat1, 2, var)
+      vars2 <- apply(mat2, 2, var)
+
+      # Using formula for t-statistic under the assumption of unequal variances (Welch's t-test)
+      t_stats <- (means1 - means2) / sqrt(vars1 / n1 + vars2 / n2)
+
+      # Degrees of freedom for Welch’s t-test (unequal variances)
+      df <-
+        (((vars1 / n1) + (vars2 / n2))^2) / ((vars1 / n1)^2 / (n1 - 1) + (vars2 /
+          n2)^
+          2 / (n2 - 1))
+      p_values <- 2 * (1 - pt(abs(t_stats), df = df))
+
+      return(p_values)
+    }
+
+    # Compute all combinations of groups
+    group_combinations <-
+      combn(names(groups_split), 2, simplify = FALSE)
+
+    # Perform vectorized t-tests for each combination of groups
+
+    if (parallel) {
+      result_list_t <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
+    } else {
+      result_list_t <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
+    }
+
+    # Convert results into desired format (data frame)
+    df_ttest <- t(data.frame(do.call(rbind, result_list_t)))
+
     print("T-test has finished")
 
     #### utest ####
-
-    # Function to perform u-test (Wilcoxon rank sum test) on two groups for a given variable (i)
-    split_u_test <- function(x, i) {
-      # If both groups have zero variance, return p-value of 1
-      if (var(groups_split[[x[1]]][[i]]) == 0 &&
-        var(groups_split[[x[2]]][[i]]) == 0) {
-        1
-      } else {
-        # Otherwise, perform u-test and return p-value
-        wilcox.test(groups_split[[x[1]]][[i]], groups_split[[x[2]]][[i]])[["p.value"]]
-      }
+    # Helper function to perform vectorized Wilcoxon test between two matrices
+    vectorized_u_test <- function(mat1, mat2) {
+      result <- matrixTests::col_wilcoxon_twosample(mat1, mat2)
+      return(result$pvalue)
     }
 
-    # Perform u-test on all pairs of groups for each variable
-    res_utest <-
-      lapply((nmet_seq), function(i) {
-        as.list(combn(names(groups_split), 2, split_u_test, i = i))
-      })
+    # Perform vectorized Wilcoxon tests for each combination of groups
 
-    # Bind the results into a single data frame
-    df_utest <-
-      data.table::rbindlist(res_utest)
-    df_utest <- data.frame(df_utest)
+    if (parallel) {
+      result_list_u <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
+    } else {
+      result_list_u <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
+    }
 
-    # Print message
+
+    # Convert Wilcoxon test results into desired format (data frame)
+    df_utest <- t(data.frame(do.call(rbind, result_list_u)))
+
     print("U-test has finished")
 
+
     if (group_nottwo) {
-      #### ANOVAPostHoc ####
-      # Perform ANOVA and Scheffe's post-hoc test
-      formula_anova <-
-        lapply(colnames(Data_final)[nmet_seq], function(x) {
-          # Create a formula for each metabolite with the metabolite as the response variable and group as the predictor
-          as.formula(paste0(x, " ~ Group"))
-        })
-      res_anova <-
-        lapply(formula_anova, function(x) {
-          # Apply ANOVA to each formula
-          summary(aov(x, data = Data_final))
-        })
-      names(res_anova) <-
-        format(formula_anova)
-      p_anova <-
-        unlist(lapply(res_anova, function(x) {
-          # Extract the p-value for each ANOVA test
-          x[[1]]$"Pr(>F)"[1]
-        }))
+      metabolite_names <- colnames(Data_final)[nmet_seq + 2]
 
-      # Create a data frame to store the p-values
-      df_anova <-
-        data.table::data.table(p_anova)
-      df_anova <- data.frame(df_anova)
+      perform_anova_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
+        formula_str <- as.formula(paste0(colname, " ~ Group"))
+        model <- aov(formula_str, data = data_subset)
+        anova_res <- summary(model)[[1]]$"Pr(>F)"[1]
+        posthoc_res <-
+          DescTools::PostHocTest(model, method = "scheffe")$Group[, 4]
+        list(anova_res = anova_res, posthoc_res = posthoc_res)
+      }
+      # Subset the data for each metabolite and pass to the worker nodes
 
-      anovapost_name <-
-        lapply(colnames(Data_final)[nmet_seq], function(x) {
-          # Create a formula for each metabolite with the metabolite as the response variable and group as the predictor
-          as.formula(paste0(x, " ~ Group"))
-        })
-      res_anovapost <-
-        lapply(anovapost_name, function(x) {
-          # Perform Scheffe's post-hoc test on each formula
-          DescTools::PostHocTest(aov(x, data = Data_final), method = "scheffe")
-        })
-      names(res_anovapost) <-
-        format(anovapost_name)
-      post_anova <-
-        lapply(res_anovapost, function(x) {
-          # Extract the p-values for each post-hoc test
-          x[["Group"]][, 4]
-        })
+      if (parallel) {
+        results <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
+      } else {
+        results <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
+      }
 
-      # Create a data frame to store the p-values for the post-hoc tests
-      df_anova_post <-
-        t(data.frame(post_anova))
 
-      # Print message indicating ANOVA and post-hoc tests are finished
+      p_anova <- sapply(results, function(x) {
+        x$anova_res
+      })
+      df_anova <- data.frame(p_anova)
+      df_anova_post <- do.call(rbind, lapply(results, function(x) {
+        x$posthoc_res
+      }))
+
       print("Anova & PostHoc has finished")
 
+      # The same principle is applied to the Kruskal Wallis tests
+      kw_results <-
+        matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
 
-      #### KruskalWallisPostHoc ####
-      # Perform Kruskal-Wallis test and post-hoc analysis using the Dunn test
+      perform_posthoc_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
+        formula <- as.formula(paste0(colname, " ~ Group"))
+        dunn_res <-
+          FSA::dunnTest(formula, data = data_subset, method = "none")
+        post_pvals <- dunn_res[["res"]][["P.unadj"]]
+        adjusted_pvals <- p.adjust(post_pvals, method = "BH")
+        list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
+      }
 
-      # Create formulas for each metabolite to be used in the Kruskal-Wallis test
-      formula_kw <-
-        lapply(colnames(Data_final)[nmet_seq], function(x) {
-          as.formula(paste0(x, " ~ Group"))
-        })
+      if (parallel) {
+        results_kw_posthoc <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
+      } else {
+        results_kw_posthoc <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
+      }
 
-      # Perform Kruskal-Wallis test for each metabolite and store p-values in a list
-      res_kw <-
-        lapply(formula_anova, function(x) {
-          kruskal.test(x, data = Data_final)[["p.value"]]
-        })
-
-      # Name the list elements with the formulas used in the Kruskal-Wallis test
-      names(res_kw) <-
-        format(formula_kw)
-
-      # Unlist the p-values and store them in a data frame
-      p_kw <- unlist(res_kw)
-      df_kw <-
-        data.table::data.table(p_kw)
-      df_kw <- data.frame(df_kw)
-
-      # Perform post-hoc analysis using the Dunn test for each metabolite
-      # and store the results in a list
-      kwpost_name <-
-        lapply(colnames(Data_final)[nmet_seq], function(x) {
-          as.formula(paste0(x, " ~ Group"))
-        })
-      res_kwpost <-
-        lapply(kwpost_name, function(x) {
-          FSA::dunnTest(x, data = Data_final, method = "none")
-        })
-
-      # Name the list elements with the formulas used in the Dunn test
-      names(res_kwpost) <-
-        format(kwpost_name)
-
-      # Extract the unadjusted p-values for each pairwise comparison and store them in a list
-      post_kw <-
-        lapply(res_kwpost, function(x) {
-          x[["res"]][["P.unadj"]]
-        })
-
-      # Adjust the p-values using the Benjamini-Hochberg procedure and store them in a data frame
-      post_kw <-
-        lapply(post_kw, function(x) {
-          p.adjust(x, method = "BH")
-        })
+      df_kw <- data.frame(p_kw = kw_results$pvalue)
       df_kw_post <-
-        t(data.table::data.table(data.frame(post_kw)))
-      df_kw_post <-
-        data.frame(df_kw_post)
+        do.call(rbind, lapply(results_kw_posthoc, function(x) {
+          x$adjusted_pvals
+        }))
 
-      # Print a message indicating that the Kruskal-Wallis test and post-hoc analysis have finished
       print("Kruskal Wallis & PostHoc has finished")
     }
 
@@ -247,12 +249,10 @@ All_stats <-
       ))
     }
 
-
-
     # Change the row names of the data frames containing the results of the t-test and U-test
     # to the names of the metabolites
     rownamechange <-
-      colnames(Data)[nmet_seq]
+      colnames(Data)[nmet_seq + 2]
     rownames(df_ttest) <- rownamechange
     rownames(df_utest) <- rownamechange
 
@@ -266,9 +266,9 @@ All_stats <-
     # the results of the ANOVA, ANOVA post-hoc, Kruskal-Wallis, and Kruskal-Wallis post-hoc tests
     # to the names of the metabolites
     if (group_nottwo) {
-      AN_Post_names <- colnames(df_anova_post)
+      AN_post_names <- colnames(df_anova_post)
       DU_post_names <-
-        res_kwpost[[1]]$res$Comparison
+        results_kw_posthoc[[1]]$dunn_res$res$Comparison
 
       rownames(df_anova) <-
         rownamechange
@@ -282,7 +282,7 @@ All_stats <-
       # to include the names of the groups and the type of test
       colnames(df_anova) <- "Anova"
       colnames(df_anova_post) <-
-        paste(AN_Post_names, "ANO_posthoc", sep = "___")
+        paste(AN_post_names, "ANO_posthoc", sep = "___")
 
       # Change the column names of the data frames containing the results of the Kruskal-Wallis and Kruskal-Wallis post-hoc tests
       # to include the names of the groups and the type of test
@@ -291,9 +291,6 @@ All_stats <-
       colnames(df_kw_post) <-
         paste(DU_post_names, "Kru_posthoc(Dunn)", sep = "___")
     }
-
-    # Remove the nmet_seq variable
-    rm(nmet_seq)
 
     # If p-value adjustment is enabled, adjust the p-values in the data frames
     # containing the results of the t-test, U-test, ANOVA, and Kruskal-Wallis tests
@@ -352,17 +349,16 @@ All_stats <-
     # Create a list containing the input data, the data with renamed columns, the results of the statistical tests,
     # and the results of the ANOVA, ANOVA post-hoc, Kruskal-Wallis, and Kruskal-Wallis post-hoc tests (if applicable)
     Final <- list()
-    Final$Data <- Data
-    Final$Data_renamed <- Data_renamed
+    Final$Data <- Data_ori
+    Final$Data_renamed <- Data_final
     Final$Result <- Result
     if (group_nottwo) {
       Final$Anova <- df_anova
-      Final$Anova_PostHoc <-
-        df_anova_post
+      Final$Anova_PostHoc <- df_anova_post
       Final$KW <- df_kw
       Final$Dunn <- df_kw_post
-      Final$t_test <- df_ttest
-      Final$u_test <- df_utest
+      Final$t_test <- as.data.frame(df_ttest)
+      Final$u_test <- as.data.frame(df_utest)
     } else {
       # If there are only two groups, include the results of the t-test and U-test in the Final list
       Final$t_test <- df_ttest[, 1]
