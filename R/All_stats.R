@@ -58,6 +58,7 @@ All_stats <-
     colnames(Data_final) <-
       c("Sample", "Group", paste0("V", nmet_seq))
 
+    # Initialize the cluster object
     if (parallel) {
       num_core <- parallel::detectCores() - 1
       num_col <- ncol(Data_final)
@@ -187,7 +188,6 @@ All_stats <-
             perform_anova_tests(subset_data)
           })
       }
-
 
       p_anova <- sapply(results, function(x) {
         x$anova_res

@@ -19,6 +19,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 License: MIT + file LICENSE
 biocViews:
+    DataRepresentation, Infrastructure, Software
 Depends: 
     R (>= 4.3.0),
     dplyr,
@@ -32,7 +33,6 @@ Imports:
     scales,
     ggpubr,
     mixOmics,
-    ecoflux,
     vegan,
     plyr,
     dplyr,
