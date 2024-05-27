@@ -27,6 +27,8 @@ The package includes
 
 ## Instructions
 
+# Note: This branch performs Welch's ANOVA and Games-Howell's test instead of ANOVA and Scheffe's test.
+
 ### Installation
 
 #### Download R
@@ -41,9 +43,7 @@ https://cran.r-project.org/bin/windows/Rtools/
 ```
 install.packages("devtools")
 
-devtools::install_github("daehwankim12/LMSstat")
-
-devtools::install_github("daehwankim12/LMSstat", ref = "develop")
+devtools::install_github("daehwankim12/LMSstat@ghtest")
 
 library(LMSstat)
 ```

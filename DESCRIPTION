@@ -1,6 +1,6 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.1.3
+Version: 1.2.0
 Authors@R: c(
     person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
     person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
@@ -16,7 +16,7 @@ LazyData: true
 URL: https://github.com/daehwankim12/LMSstat
 BugReports: https://github.com/daehwankim12/LMSstat/issues
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.2.4
 License: MIT + file LICENSE
 biocViews:
     DataRepresentation, Infrastructure, Software
@@ -49,4 +49,5 @@ Imports:
     doParallel,
     doSNOW,
     matrixStats,
-    matrixTests
+    matrixTests,
+    PMCMRplus
