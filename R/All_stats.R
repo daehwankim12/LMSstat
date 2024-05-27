@@ -108,18 +108,20 @@ All_stats <-
 
     # Perform vectorized t-tests for each combination of groups
 
-    result_list_t <- if (parallel) {
-      parallel::parLapply(cl, group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_t_test(mat1, mat2)
-      })
+    if (parallel) {
+      result_list_t <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
     } else {
-      lapply(group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_t_test(mat1, mat2)
-      })
+      result_list_t <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_t_test(mat1, mat2)
+        })
     }
 
     # Convert results into desired format (data frame)
@@ -136,18 +138,20 @@ All_stats <-
 
     # Perform vectorized Wilcoxon tests for each combination of groups
 
-    result_list_u <- if (parallel) {
-      parallel::parLapply(cl, group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_u_test(mat1, mat2)
-      })
+    if (parallel) {
+      result_list_u <-
+        parallel::parLapply(cl, group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
     } else {
-      lapply(group_combinations, function(combo) {
-        mat1 <- group_matrices[[combo[1]]]
-        mat2 <- group_matrices[[combo[2]]]
-        vectorized_u_test(mat1, mat2)
-      })
+      result_list_u <-
+        lapply(group_combinations, function(combo) {
+          mat1 <- group_matrices[[combo[1]]]
+          mat2 <- group_matrices[[combo[2]]]
+          vectorized_u_test(mat1, mat2)
+        })
     }
 
 
@@ -160,69 +164,74 @@ All_stats <-
     if (group_nottwo) {
       metabolite_names <- colnames(Data_final)[nmet_seq + 2]
 
-      anova_results <- matrixTests::col_oneway_welch(as.matrix(Data_final[metabolite_names]), Data_final$Group)
-
-      perform_games_tests <- function(data_subset) {
-        formula_str <- as.formula(paste0(names(data_subset)[2], " ~ Group"))
-        games_res <- PMCMRplus::gamesHowellTest(formula_str, data = data_subset)
-        t(matrix(games_res$p.value, nrow = sqrt(length(
-          games_res$p.value
-        ))))
+      perform_anova_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
+        formula_str <- as.formula(paste0(colname, " ~ Group"))
+        model <- aov(formula_str, data = data_subset)
+        anova_res <- summary(model)[[1]]$"Pr(>F)"[1]
+        posthoc_res <-
+          DescTools::PostHocTest(model, method = "scheffe")$Group[, 4]
+        list(anova_res = anova_res, posthoc_res = posthoc_res)
       }
       # Subset the data for each metabolite and pass to the worker nodes
 
-      results <- if (parallel) {
-        parallel::parLapply(cl, metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_games_tests(subset_data)
-        })
+      if (parallel) {
+        results <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
       } else {
-        lapply(metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_games_tests(subset_data)
-        })
+        results <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_anova_tests(subset_data)
+          })
       }
 
-      df_anova <- data.frame(p_anova = anova_results$pvalue)
-      melted_vectors <- lapply(results, function(mat) {
-        mat[upper.tri(mat, diag = TRUE)]
+      p_anova <- sapply(results, function(x) {
+        x$anova_res
       })
-      df_anova_post <- do.call(rbind, melted_vectors)
+      df_anova <- data.frame(p_anova)
+      df_anova_post <- do.call(rbind, lapply(results, function(x) {
+        x$posthoc_res
+      }))
 
       print("Anova & PostHoc has finished")
 
       # The same principle is applied to the Kruskal Wallis tests
-      kw_results <- matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
+      kw_results <-
+        matrixTests::col_kruskalwallis(as.matrix(Data_final[metabolite_names]), Data_final$Group)
 
-
-      perform_posthoc_tests <- function(subset_data) {
-        formula <- as.formula(paste0(names(subset_data)[2], " ~ Group"))
-        dunn_res <- FSA::dunnTest(formula, data = subset_data, method = "none")
-        adjusted_pvals <- p.adjust(dunn_res[["res"]][["P.unadj"]], method = "BH")
+      perform_posthoc_tests <- function(data_subset) {
+        colname <- names(data_subset)[2]
+        formula <- as.formula(paste0(colname, " ~ Group"))
+        dunn_res <-
+          FSA::dunnTest(formula, data = data_subset, method = "none")
+        post_pvals <- dunn_res[["res"]][["P.unadj"]]
+        adjusted_pvals <- p.adjust(post_pvals, method = "BH")
         list(adjusted_pvals = adjusted_pvals, dunn_res = dunn_res)
       }
 
-      results_kw_posthoc <- if (parallel) {
-        parallel::parLapply(cl, metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_posthoc_tests(subset_data)
-        })
+      if (parallel) {
+        results_kw_posthoc <-
+          parallel::parLapply(cl, metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
       } else {
-        lapply(metabolite_names, function(col) {
-          subset_data <- Data_final[, c("Group", col)]
-          perform_posthoc_tests(subset_data)
-        })
+        results_kw_posthoc <-
+          lapply(metabolite_names, function(col) {
+            subset_data <- Data_final[, c("Group", col)]
+            perform_posthoc_tests(subset_data)
+          })
       }
 
-
       df_kw <- data.frame(p_kw = kw_results$pvalue)
-
-      df_kw_post <- do.call(
-        rbind,
-        lapply(results_kw_posthoc, function(x) {
+      df_kw_post <-
+        do.call(rbind, lapply(results_kw_posthoc, function(x) {
           x$adjusted_pvals
-        })
-      )
+        }))
 
       print("Kruskal Wallis & PostHoc has finished")
     }
@@ -234,7 +243,10 @@ All_stats <-
     Names <- NULL
 
     for (i in seq_len(choose(length(groups_split), 2))) {
-      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i], combn(names(groups_split), 2)[2, i], sep = "-"))
+      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
+        combn(names(groups_split), 2)[2, i],
+        sep = "-"
+      ))
     }
 
     # Change the row names of the data frames containing the results of the t-test and U-test
@@ -254,7 +266,7 @@ All_stats <-
     # the results of the ANOVA, ANOVA post-hoc, Kruskal-Wallis, and Kruskal-Wallis post-hoc tests
     # to the names of the metabolites
     if (group_nottwo) {
-      AN_post_names <- results_kw_posthoc[[1]]$dunn_res$res$Comparison # colnames(df_anova_post)
+      AN_post_names <- colnames(df_anova_post)
       DU_post_names <-
         results_kw_posthoc[[1]]$dunn_res$res$Comparison
 
