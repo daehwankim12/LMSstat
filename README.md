@@ -3,9 +3,9 @@ Automation of statistical test with an identical data input aiming to reduce ard
 
 The package includes
 
-* Simple Statistics :u-test, t-test, post hocs of Anova and Kruskal Wallis with FDR adjusted values
+* Simple Statistics :u-test, t-test, post-hocs of Anova and Kruskal-Wallis with FDR adjusted values
 
-* Bar, Box, Dot, Violin plots with significance (u-test, t-test, post hocs of Anova and Kruskal Wallis)
+* Bar, Box, Dot, Violin plots with significance (u-test, t-test, post-hocs of Anova and Kruskal-Wallis)
 
 * Scaling & Transformation
 

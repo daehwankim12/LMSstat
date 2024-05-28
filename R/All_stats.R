@@ -93,10 +93,7 @@ All_stats <-
       t_stats <- (means1 - means2) / sqrt(vars1 / n1 + vars2 / n2)
 
       # Degrees of freedom for Welch’s t-test (unequal variances)
-      df <-
-        (((vars1 / n1) + (vars2 / n2))^2) / ((vars1 / n1)^2 / (n1 - 1) + (vars2 /
-          n2)^
-          2 / (n2 - 1))
+      df <- (((vars1 / n1) + (vars2 / n2))^2) / ((vars1 / n1)^2 / (n1 - 1) + (vars2 / n2)^2 / (n2 - 1))
       p_values <- 2 * (1 - pt(abs(t_stats), df = df))
 
       return(p_values)
@@ -164,38 +161,34 @@ All_stats <-
     if (group_nottwo) {
       metabolite_names <- colnames(Data_final)[nmet_seq + 2]
 
+      anova_results <- matrixTests::col_oneway_equalvar(as.matrix(Data_final[metabolite_names]), Data_final$Group)
+
       perform_anova_tests <- function(data_subset) {
-        colname <- names(data_subset)[2]
-        formula_str <- as.formula(paste0(colname, " ~ Group"))
-        model <- aov(formula_str, data = data_subset)
-        anova_res <- summary(model)[[1]]$"Pr(>F)"[1]
-        posthoc_res <-
-          DescTools::PostHocTest(model, method = "scheffe")$Group[, 4]
-        list(anova_res = anova_res, posthoc_res = posthoc_res)
+        formula_str <- as.formula(paste0(names(data_subset)[2], " ~ Group"))
+        games_res <- PMCMRplus::scheffeTest(formula_str, data = data_subset)
+        t(matrix(games_res$p.value, nrow = sqrt(length(
+          games_res$p.value
+        ))))
       }
       # Subset the data for each metabolite and pass to the worker nodes
 
-      if (parallel) {
-        results <-
-          parallel::parLapply(cl, metabolite_names, function(col) {
-            subset_data <- Data_final[, c("Group", col)]
-            perform_anova_tests(subset_data)
-          })
+      results <- if (parallel) {
+        parallel::parLapply(cl, metabolite_names, function(col) {
+          subset_data <- Data_final[, c("Group", col)]
+          perform_anova_tests(subset_data)
+        })
       } else {
-        results <-
-          lapply(metabolite_names, function(col) {
-            subset_data <- Data_final[, c("Group", col)]
-            perform_anova_tests(subset_data)
-          })
+        lapply(metabolite_names, function(col) {
+          subset_data <- Data_final[, c("Group", col)]
+          perform_anova_tests(subset_data)
+        })
       }
 
-      p_anova <- sapply(results, function(x) {
-        x$anova_res
+      df_anova <- data.frame(p_anova = anova_results$pvalue)
+      melted_vectors <- lapply(results, function(mat) {
+        mat[upper.tri(mat, diag = TRUE)]
       })
-      df_anova <- data.frame(p_anova)
-      df_anova_post <- do.call(rbind, lapply(results, function(x) {
-        x$posthoc_res
-      }))
+      df_anova_post <- do.call(rbind, melted_vectors)
 
       print("Anova & PostHoc has finished")
 
@@ -243,32 +236,25 @@ All_stats <-
     Names <- NULL
 
     for (i in seq_len(choose(length(groups_split), 2))) {
-      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i],
-        combn(names(groups_split), 2)[2, i],
-        sep = "-"
-      ))
+      Names <- rbind(Names, paste(combn(names(groups_split), 2)[1, i], combn(names(groups_split), 2)[2, i], sep = "-"))
     }
 
     # Change the row names of the data frames containing the results of the t-test and U-test
     # to the names of the metabolites
-    rownamechange <-
-      colnames(Data)[nmet_seq + 2]
+    rownamechange <- colnames(Data)[nmet_seq + 2]
     rownames(df_ttest) <- rownamechange
     rownames(df_utest) <- rownamechange
 
     # Change the column names of the data frames containing the results of the t-test and U-test
     # to include the names of the groups and the type of test
-    colnames(df_ttest) <-
-      paste(Names[, 1], "t-test", sep = "___")
-    colnames(df_utest) <-
-      paste(Names[, 1], "u-test", sep = "___")
+    colnames(df_ttest) <- paste(Names[, 1], "t-test", sep = "___")
+    colnames(df_utest) <- paste(Names[, 1], "u-test", sep = "___")
     # If there are more than two groups, change the row names of the data frames containing
     # the results of the ANOVA, ANOVA post-hoc, Kruskal-Wallis, and Kruskal-Wallis post-hoc tests
     # to the names of the metabolites
     if (group_nottwo) {
-      AN_post_names <- colnames(df_anova_post)
-      DU_post_names <-
-        results_kw_posthoc[[1]]$dunn_res$res$Comparison
+      AN_post_names <- results_kw_posthoc[[1]]$dunn_res$res$Comparison
+      DU_post_names <- results_kw_posthoc[[1]]$dunn_res$res$Comparison
 
       rownames(df_anova) <-
         rownamechange
