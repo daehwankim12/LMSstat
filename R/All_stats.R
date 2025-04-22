@@ -108,81 +108,93 @@ All_stats <- function(Data,
   rownames(u_mat) <- mets
   message("u-test completed.")
 
-  #### 6. ANOVA ####
-  df_anova <- data.frame(
-    p_anova = matrixTests::col_oneway_equalvar(as.matrix(Data_renamed[, mets, with = FALSE]), Data_renamed$Group)$pvalue,
-    row.names = mets
-  )
-  message("ANOVA completed.")
+  #### 6–9. Only if more than two groups ####
+  if (length(groups) > 2) {
+    #### 6. ANOVA ####
+    df_anova <- data.frame(
+      p_anova = matrixTests::col_oneway_equalvar(as.matrix(Data_renamed[, mets, with = FALSE]), Data_renamed$Group)$pvalue,
+      row.names = mets
+    )
+    message("ANOVA completed.")
 
-  #### 7. Kruskal-Wallis ####
-  df_kw <- data.frame(
-    p_kw = matrixTests::col_kruskalwallis(as.matrix(Data_renamed[, mets, with = FALSE]), Data_renamed$Group)$pvalue,
-    row.names = mets
-  )
-  message("Kruskal-Wallis completed.")
+    #### 7. Kruskal-Wallis ####
+    df_kw <- data.frame(
+      p_kw = matrixTests::col_kruskalwallis(as.matrix(Data_renamed[, mets, with = FALSE]), Data_renamed$Group)$pvalue,
+      row.names = mets
+    )
+    message("Kruskal-Wallis completed.")
 
-  #### 8. Scheffe post-hoc ####
-  get_pvec <- function(pmat) {
-    vapply(pairs, function(pr) {
-      pmat[pr[2], pr[1]]
-    }, numeric(1))
+    #### 8. Scheffe post-hoc ####
+    get_pvec <- function(pmat) {
+      vapply(pairs, function(pr) {
+        pmat[pr[2], pr[1]]
+      }, numeric(1))
+    }
+    Data_V <- as.data.frame(Data_renamed)
+    safe <- paste0("V", seq_along(mets))
+    colnames(Data_V)[-(1:2)] <- safe
+    mmap <- setNames(safe, mets)
+    sch_list <- apply_func(seq_along(mets), function(i) {
+      pm <- PMCMRplus::scheffeTest(as.formula(paste(mmap[[mets[i]]], "~ Group")), data = Data_V[, c("Group", mmap[[mets[i]]])])$p.value
+      get_pvec(pm)
+    })
+    df_scheffe <- do.call(rbind, sch_list)
+    colnames(df_scheffe) <- paste(pair_names, "SCH_posthoc", sep = "___")
+    rownames(df_scheffe) <- mets
+    message("Scheffe post-hoc completed.")
+
+    #### 9. Dunn post-hoc ####
+    lex_pair_names <- sort(pair_names)
+    canon <- function(x) {
+      vapply(strsplit(gsub("\\s+", "", x), "-"), function(v) {
+        paste(sort(v), collapse = "-")
+      }, character(1))
+    }
+    dun_list <- apply_func(seq_along(mets), function(i) {
+      dt <- FSA::dunnTest(as.formula(paste(mmap[[mets[i]]], "~ Group")),
+        data = Data_V[, c("Group", mmap[[mets[i]]])],
+        method = "none"
+      )$res
+      pvec <- setNames(dt$P.unadj, canon(dt$Comparison))
+      pvec <- pvec[lex_pair_names]
+      stats::p.adjust(pvec, method = Adjust_method)
+    })
+    df_dunn <- do.call(rbind, dun_list)
+    colnames(df_dunn) <- paste(lex_pair_names, "DUNN_posthoc", sep = "___")
+    rownames(df_dunn) <- mets
+    message("Dunn post-hoc completed.")
   }
-  Data_V <- as.data.frame(Data_renamed)
-  safe <- paste0("V", seq_along(mets))
-  colnames(Data_V)[-(1:2)] <- safe
-  mmap <- setNames(safe, mets)
-  sch_list <- apply_func(seq_along(mets), function(i) {
-    m <- mets[i]
-    pm <- PMCMRplus::scheffeTest(as.formula(paste(mmap[[m]], "~ Group")), data = Data_V[, c("Group", mmap[[m]])])$p.value
-    get_pvec(pm)
-  })
-  df_scheffe <- do.call(rbind, sch_list)
-  colnames(df_scheffe) <- paste(pair_names, "SCH_posthoc", sep = "___")
-  rownames(df_scheffe) <- mets
-  message("Scheffe post-hoc completed.")
-
-  #### 9. Dunn post-hoc ####
-  lex_pair_names <- sort(pair_names)
-  canon <- function(x) {
-    vapply(strsplit(gsub("\\s+", "", x), "-"), function(v) {
-      paste(sort(v), collapse = "-")
-    }, character(1))
-  }
-  dun_list <- apply_func(seq_along(mets), function(i) {
-    m <- mets[i]
-    dt <- FSA::dunnTest(as.formula(paste(mmap[[m]], "~ Group")), data = Data_V[, c("Group", mmap[[m]])], method = "none")$res
-    pvec <- setNames(dt$P.unadj, canon(dt$Comparison))
-    pvec <- pvec[lex_pair_names]
-    stats::p.adjust(pvec, method = Adjust_method)
-  })
-  df_dunn <- do.call(rbind, dun_list)
-  colnames(df_dunn) <- paste(lex_pair_names, "DUNN_posthoc", sep = "___")
-  rownames(df_dunn) <- mets
-  message("Dunn post-hoc completed.")
 
   #### 10. P-value adjustment ####
   if (Adjust_p_value) {
     df_t <- as.data.frame(apply(t_mat, 2, stats::p.adjust, method = Adjust_method))
     df_u <- as.data.frame(apply(u_mat, 2, stats::p.adjust, method = Adjust_method))
-    df_a <- data.frame(
-      p_anova = stats::p.adjust(df_anova$p_anova, method = Adjust_method),
-      row.names = mets
-    )
-    df_k <- data.frame(
-      p_kw = stats::p.adjust(df_kw$p_kw, method = Adjust_method),
-      row.names = mets
-    )
+    rownames(df_t) <- rownames(df_u) <- mets
+    if (length(groups) > 2) {
+      df_a <- data.frame(
+        p_anova = stats::p.adjust(df_anova$p_anova, method = Adjust_method),
+        row.names = mets
+      )
+      df_k <- data.frame(
+        p_kw = stats::p.adjust(df_kw$p_kw, method = Adjust_method),
+        row.names = mets
+      )
+    }
   } else {
     df_t <- as.data.frame(t_mat)
     df_u <- as.data.frame(u_mat)
-    df_a <- df_anova
-    df_k <- df_kw
+    if (length(groups) > 2) {
+      df_a <- df_anova
+      df_k <- df_kw
+    }
   }
   message("P-value adjustment completed.")
 
   #### 11. Compile results ####
-  Result <- cbind(df_t, df_u, df_a, df_scheffe, df_k, df_dunn)
+  Result <- cbind(df_t, df_u)
+  if (length(groups) > 2) {
+    Result <- cbind(Result, df_a, df_scheffe, df_k, df_dunn)
+  }
   Final <- list(
     Data         = Data_ori,
     Data_renamed = as.data.frame(Data_renamed),
