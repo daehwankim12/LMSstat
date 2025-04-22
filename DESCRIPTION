@@ -1,6 +1,6 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.1.5.alpha
+Version: 1.1.5-0
 Authors@R: c(
     person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
     person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
