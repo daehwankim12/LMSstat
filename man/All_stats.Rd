@@ -2,30 +2,49 @@
 % Please edit documentation in R/All_stats.R
 \name{All_stats}
 \alias{All_stats}
-\title{Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc),
-Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR}
+\title{Automatically process multiple statistical tests for metabolomic data}
 \usage{
 All_stats(Data, Adjust_p_value = TRUE, Adjust_method = "BH", parallel = FALSE)
 }
 \arguments{
-\item{Data}{csv file with Header as False First column with Sample Second column
-with Multilevel(Mixomics) so that it can be compatible with other multivariate
-statistics Third column with Group information. Rest of the columns are the metabolites to be tested.}
+\item{Data}{A data.frame or data.table where the first column contains Sample IDs,
+the second column contains Group information, and the remaining columns
+are metabolites to be tested.}
 
-\item{Adjust_p_value}{Set True if FDR adjustments are to be made. If not set False}
+\item{Adjust_p_value}{Logical. If TRUE (default), p-values will be adjusted for
+multiple testing using the method specified in Adjust_method.}
 
-\item{Adjust_method}{adjustment methods frequently used. "holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"}
+\item{Adjust_method}{Character string specifying the adjustment method.
+Options include "holm", "hochberg", "hommel", "bonferroni", "BH", "BY",
+"fdr", or "none". Default is "BH" (Benjamini-Hochberg).}
 
-\item{parallel}{Set True if you want to use parallel computing.}
+\item{parallel}{Logical. If TRUE, parallel computing will be used for calculations
+when the number of metabolites is ≥1000. Default is FALSE.}
 }
 \value{
-List including Result Matrix of p-values, converted datas.
+A list containing:
+\item{Data}{The original input data}
+\item{Result}{Matrix of p-values from all tests}
+\item{t_test}{t-test results (if more than two groups)}
+\item{u_test}{U-test results (if more than two groups)}
+\item{Anova}{ANOVA results (if more than two groups)}
+\item{Anova_PostHoc}{Scheffe test results (if more than two groups)}
+\item{KW}{Kruskal-Wallis test results (if more than two groups)}
+\item{Dunn}{Dunn test results with BH adjustment (if more than two groups)}
 }
 \description{
-Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc),
-Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
+This function performs T-test, U-test, ANOVA, Scheffe's test (ANOVA post-hoc),
+Kruskal-Wallis test, and Dunn's test (Kruskal-Wallis post-hoc)
+while allowing adjustment for multiple testing.
 }
 \examples{
+# Load example data
 data("Data")
+
+# Run statistical tests
+library(data.table)
 Result <- All_stats(Data)
+
+# View results
+head(Result$Result)
 }

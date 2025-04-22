@@ -133,20 +133,20 @@ writexl::write_xlsx(list(mysheet = Data), "p_value_result.xlsx")  # Write xlsx w
 
 data.table::fwrite(as.data.frame(Statfile[["Result"]]), "p_value_result.csv", row.names = TRUE)
 ```
-### Plots
+### Plots - DO NOT USE
 
 ```
 # Makes a subdirectory and saves box plots for all the variables
-Boxplot(Statfile,asterisk = "u_test") 
+# Boxplot(Statfile,asterisk = "u_test") 
 
 # Makes a subdirectory and saves dot plots for all the variables
-Dotplot(Statfile,asterisk = "t_test") 
+# Dotplot(Statfile,asterisk = "t_test") 
 
 # Makes a subdirectory and saves bar plots for all the variables
-Barplot(Statfile,asterisk = "Scheffe")
+# Barplot(Statfile,asterisk = "Scheffe")
 
 # Makes a subdirectory and saves violin plots for all the variables
-Violinplot(Statfile,asterisk = "Scheffe")
+# Violinplot(Statfile,asterisk = "Scheffe")
 ```
 
 
