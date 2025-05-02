@@ -99,9 +99,21 @@ All_stats <- function(Data,
   message("t-test completed.")
 
   #### 5. u-test ####
+  thresh <- 10
+  max_grp_n <- Data_renamed[, .N, by = Group][which.max(N), N]
+  has_ties <- any(vapply(
+    mats, function(m) any(apply(m, 2, anyDuplicated) > 0),
+    logical(1)
+  ))
+  do_exact <- max_grp_n <= thresh && !has_ties
+  message(sprintf(
+    "Exact test set to %s (max N = %d, ties = %s)",
+    do_exact, max_grp_n, has_ties
+  ))
+
   u_list <- apply_func(seq_len(n_pairs), function(i) {
     p <- pairs[[i]]
-    matrixTests::col_wilcoxon_twosample(mats[[p[1]]], mats[[p[2]]])$pvalue
+    matrixTests::col_wilcoxon_twosample(mats[[p[1]]], mats[[p[2]]], exact = do_exact)$pvalue
   })
   u_mat <- do.call(cbind, u_list)
   colnames(u_mat) <- paste(pair_names, "u-test", sep = "___")
