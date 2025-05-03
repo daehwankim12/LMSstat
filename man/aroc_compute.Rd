@@ -2,7 +2,7 @@
 % Please edit documentation in R/aroc_compute.R
 \name{aroc_compute}
 \alias{aroc_compute}
-\title{compute.threshold.YI.AROC.sp function modified to retrieve sensitivity and specificity}
+\title{Compute Youden-Index threshold, sensitivity and specificity}
 \usage{
 aroc_compute(
   object,
@@ -13,11 +13,23 @@ aroc_compute(
 )
 }
 \arguments{
-\item{data}{https://rdrr.io/cran/ROCnReg/src/R/compute.threshold.YI.AROC.sp.R}
+\item{object}{An \code{\link[ROCnReg]{AROC.sp}} object.}
+
+\item{newdata}{Optional data frame in which to evaluate the
+covariates.  Defaults to the data used to fit \code{object}.}
+
+\item{parallel}{Character string; one of \code{"no"}, \code{"multicore"},
+or \code{"snow"}.}
+
+\item{ncpus}{Number of CPUs to use when \code{parallel != "no"}.}
+
+\item{cl}{A parallel cluster object (ignored unless
+\code{parallel == "snow"}).}
 }
 \value{
-compute.threshold.YI.AROC.sp with sensitivity and specificity
+A list with components \code{thresholds}, \code{YI},
+\code{sensitivity}, \code{specificity}, etc.
 }
 \description{
-compute.threshold.YI.AROC.sp function modified to retrieve sensitivity and specificity
+Compute Youden-Index threshold, sensitivity and specificity
 }

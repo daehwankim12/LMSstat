@@ -1,8 +1,9 @@
 #' Normality test with Shaprio_Wilk_test
-#'
+#' @importFrom dplyr mutate case_when arrange filter %>%
 #' @param Data input data file
 #'
 #' @return dataframe with shapiro wilk test
+#' @importFrom stats shapiro.test
 #' @export
 #'
 #' @examples Result <- Norm_test(Data)

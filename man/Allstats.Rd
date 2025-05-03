@@ -20,6 +20,8 @@ List including Result Matrix of p-values, converted datas.
 Automatically processes T-test, U-test, Anova, Scheffe(Anova Post-Hoc), Krukal Wallis, Dunn-test(BH adjusted,(Kurkal Wallis Post-Hoc)) while allowing adjustment of FDR
 }
 \examples{
+\dontrun{
 data("Data")
 Result <- Allstats(Data)
+}
 }

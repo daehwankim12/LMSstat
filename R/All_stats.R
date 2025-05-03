@@ -29,7 +29,7 @@
 #' @importFrom matrixTests col_t_equalvar col_wilcoxon_twosample col_oneway_equalvar col_kruskalwallis
 #' @importFrom PMCMRplus scheffeTest
 #' @importFrom FSA dunnTest
-#' @importFrom stats as.formula p.adjust
+#' @importFrom stats as.formula p.adjust setNames
 #' @importFrom utils combn
 #' @importFrom parallel makeCluster detectCores clusterEvalQ parLapply stopCluster clusterExport
 #'
@@ -211,8 +211,8 @@ All_stats <- function(Data,
     Data         = Data_ori,
     Data_renamed = as.data.frame(Data_renamed),
     Result       = as.matrix(Result),
-    t_test       = df_t,
-    u_test       = df_u
+    t_test       = as.matrix(df_t),
+    u_test       = as.matrix(df_u)
   )
   if (length(groups) > 2) {
     Final$Anova <- df_a

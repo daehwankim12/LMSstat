@@ -5,16 +5,21 @@
 #' @param Adjust_method adjustment methods frequently used. "holm", "hochberg", "hommel", "bonferroni", "BH", "BY","fdr", "none"
 #'
 #' @return List including Result Matrix of p-values, converted datas.
+#' @importFrom stats t.test wilcox.test aov kruskal.test
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' data("Data")
 #' Result <- Allstats(Data)
+#' }
 Allstats <-
   function(Data,
            Adjust_p_value = T,
            Adjust_method = "BH") {
-    .Deprecated("All_stats")
+    .Deprecated("All_stats",
+      msg = "Allstats is deprecated. Please use All_stats instead."
+    )
     LETTERS210729 <- paste0("V", 1:500000)
     if ("group" %in% colnames(Data)) {
       Data <- dplyr::rename(Data, "Group" = "group")
@@ -705,7 +710,7 @@ Allstats <-
       Final$Data_renamed <- Data_renamed
       Final$Result <- Result
       Final$Anova <- Result_Ano
-      Final$Anova_PostHoc <- Result_Ano_P
+      Final$Scheffe <- Result_Ano_P
       Final$KW <- Result_Kru
       Final$Dunn <- Result_Kru_P
       Final$t_test <- Result_T

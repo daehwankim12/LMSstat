@@ -2,16 +2,20 @@
 % Please edit documentation in R/data_summary.R
 \name{data_summary}
 \alias{data_summary}
-\title{modified summary function used for ggbarplot}
+\title{Group-wise numeric summary}
 \usage{
 data_summary(data, varname, groupnames)
 }
 \arguments{
-\item{data}{http://www.sthda.com/english/wiki/ggplot2-error-bars-quick-start-guide-r-software-and-data-visualization}
+\item{data}{Data frame containing the variables.}
+
+\item{varname}{Name (string) of the numeric variable to summarise.}
+
+\item{groupnames}{Character vector with the grouping variables.}
 }
 \value{
-summarized matrix with SEM and mean for Barplot
+A data frame with N, mean, and SD for each group.
 }
 \description{
-modified summary function used for ggbarplot
+Group-wise numeric summary
 }

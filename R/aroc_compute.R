@@ -1,8 +1,15 @@
-#' compute.threshold.YI.AROC.sp function modified to retrieve sensitivity and specificity
-#'
-#' @param data https://rdrr.io/cran/ROCnReg/src/R/compute.threshold.YI.AROC.sp.R
-#'
-#' @return compute.threshold.YI.AROC.sp with sensitivity and specificity
+#' Compute Youden-Index threshold, sensitivity and specificity
+#' @importFrom stats ecdf na.omit pnorm predict qnorm quantile
+#' @param object  An \code{\link[ROCnReg]{AROC.sp}} object.
+#' @param newdata Optional data frame in which to evaluate the
+#'   covariates.  Defaults to the data used to fit \code{object}.
+#' @param parallel Character string; one of `"no"`, `"multicore"`,
+#'   or `"snow"`.
+#' @param ncpus    Number of CPUs to use when \code{parallel != "no"}.
+#' @param cl       A parallel cluster object (ignored unless
+#'   \code{parallel == "snow"}).
+#' @return A list with components \code{thresholds}, \code{YI},
+#'   \code{sensitivity}, \code{specificity}, etc.
 #' @export
 aroc_compute <-
   function(object,
@@ -28,7 +35,7 @@ aroc_compute <-
       stop("Not all needed variables are supplied in newdata")
     }
     if (missing(newdata)) {
-      newdata <- cROCData(object$data, names.cov, object$group)
+      newdata <- ROCnReg::cROCData(object$data, names.cov, object$group)
     } else {
       newdata <- na.omit(newdata[, names.cov, drop = FALSE])
     }

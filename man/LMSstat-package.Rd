@@ -21,6 +21,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Jimin Lee \email{dlwlals0928@snu.ac.kr}
   \item Hyunho Song \email{shh0409@snu.ac.kr}
   \item Jihyun Chun \email{jihyun5311@snu.ac.kr}
   \item CHANG-HO KIM \email{demizor3@gmail.com}

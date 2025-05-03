@@ -1,10 +1,14 @@
 #' Scale_Transformation of data file
 #'
-#' @param Data uploaded data
+#' @importFrom dplyr %>%
+#' @param data uploaded data
 #' @param param "None","Auto","log10","Pareto"
 #' @param save T,F
 #'
 #' @return scaled, transformed CSV file
+#'
+#' @importFrom stats sd
+#' @importFrom utils write.csv
 #' @export
 #'
 #' @examples data(Data)

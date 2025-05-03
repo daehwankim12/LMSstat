@@ -12,6 +12,7 @@
 #' @param ellipse T, F
 #'
 #' @return PCA plot
+#' @importFrom stats prcomp
 #' @export
 #'
 #' @examples data(Data)

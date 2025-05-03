@@ -19,15 +19,19 @@
 #' @param sig_int significance parameter
 #'
 #' @importFrom foreach %dopar%
+#' @importFrom utils setTxtProgressBar txtProgressBar
 #' @return ggbarplot
 #' @export
 #'
-#' @examples data("Data")
+#' @examples
+#' \dontrun{
+#' data("Data")
 #' Test <- All_stats(Data)
 #' Barplot(Test,
 #'   asterisk = "Dunn", significant_variable_only = FALSE,
 #'   color = c("#FF3300", "#FF6600", "#FFCC00", "#99CC00", "#0066CC", "#660099")
 #' )
+#' }
 Barplot <- function(data,
                     asterisk = "t_test",
                     significant_variable_only = F,
@@ -52,7 +56,7 @@ Barplot <- function(data,
                     Y_lab = 10,
                     T_size = 15,
                     sig_int = c(0.05, 0.01)) {
-  {
+  {    .Deprecated("Barplot_new", msg = "'Barplot'은 제거될 예정이며 All_stats와 호환되지 않습니다. 대신 'Barplot_new'를 사용하길 바랍니다.")
     # Summary
     ### Plot_data_prep###
     ifelse(!dir.exists(file.path(getwd(), "barplot")), dir.create(file.path(getwd(), "barplot")), FALSE)
@@ -74,7 +78,7 @@ Barplot <- function(data,
     ckey <- color[1:length(unique(data[["Data"]]$Group))]
 
     if (asterisk == "Scheffe") {
-      p_val_data <- data[["Anova_PostHoc"]]
+      p_val_data <- data[["Scheffe"]]
     } else if (asterisk == "t_test") {
       p_val_data <- data[["t_test"]]
     } else if (asterisk == "u_test") {

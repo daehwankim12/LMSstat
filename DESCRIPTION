@@ -1,8 +1,9 @@
 Package: LMSstat
 Title: AUTOMATION OF STATISTICAL TESTS WITH AN IDENTICAL DATA INPUT
-Version: 1.1.5-1
+Version: 1.1.5-2
 Authors@R: c(
     person("Daehwan", "Kim", email = "kdh5358@snu.ac.kr", role = c("aut", "cre")),
+    person("Jimin", "Lee", email = "dlwlals0928@snu.ac.kr", role = c("aut")),
     person("Hyunho", "Song", email = "shh0409@snu.ac.kr", role = c("aut")),
     person("Jihyun", "Chun", email = "jihyun5311@snu.ac.kr", role = c("aut")),
     person("Seong-Hun", "Bong", email = "b970612@naver.com", role = c("ctb")),
@@ -21,33 +22,38 @@ License: MIT + file LICENSE
 biocViews:
     DataRepresentation, Infrastructure, Software
 Depends: 
-    R (>= 4.3.0),
-    dplyr,
-    foreach
+    R (>= 4.3.0)
 Imports: 
+    foreach,
+    magrittr,
     DescTools,
     FSA,
-    viridis,
     gtools,
     ggplot2,
     scales,
     ggpubr,
-    mixOmics,
     vegan,
     plyr,
     dplyr,
-    tidyverse,
     pROC,
     ROCnReg,
     ggrepel,
+    ggforce,
     circlize,
     ComplexHeatmap,
     ape,
-    VennDiagram,
-    rcompanion,
     data.table,
-    doParallel,
     doSNOW,
-    matrixStats,
     matrixTests,
-    PMCMRplus
+    PMCMRplus,
+    ragg,
+    tibble,
+    tidyr
+Suggests:
+    VennDiagram,
+    doParallel,
+    matrixStats,
+    mixOmics,
+    rcompanion,
+    tidyverse,
+    viridis

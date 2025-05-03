@@ -7,11 +7,11 @@
 D_tran(data, param = "None", save = FALSE)
 }
 \arguments{
+\item{data}{uploaded data}
+
 \item{param}{"None","Auto","log10","Pareto"}
 
 \item{save}{T,F}
-
-\item{Data}{uploaded data}
 }
 \value{
 scaled, transformed CSV file

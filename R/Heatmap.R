@@ -19,10 +19,12 @@
 #' @param a_h top annotation height
 #'
 #' @return Heatmap
+#'
+#' @importFrom grDevices pdf dev.off
 #' @export
 #'
 #' @examples data(Data)
-#' data <- D_tran(Data, param = "Auto", save = F)
+#' data <- D_tran(Data, param = "Auto", save = FALSE)
 #' Heatmap(data)
 Heatmap <- function(data,
                     col = c("green", "white", "red"),

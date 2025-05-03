@@ -68,6 +68,6 @@ Heatmap with top annotation bar
 }
 \examples{
 data(Data)
-data <- D_tran(Data, param = "Auto", save = F)
+data <- D_tran(Data, param = "Auto", save = FALSE)
 Heatmap(data)
 }

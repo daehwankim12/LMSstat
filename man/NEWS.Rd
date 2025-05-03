@@ -1,4 +1,7 @@
 \name{NEWS}
+\description{
+Package news.
+}
 \alias{NEWS}
 \title{News for Package}
 
