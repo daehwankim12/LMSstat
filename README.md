@@ -41,9 +41,9 @@ https://cran.r-project.org/bin/windows/Rtools/
 ```
 install.packages("devtools")
 
-devtools::install_github("daehwankim12/LMSstat")
+devtools::install_github("SNUFML/LMSstat")
 
-devtools::install_github("daehwankim12/LMSstat", ref = "develop")
+# devtools::install_github("SNUFML/LMSstat", ref = "develop")
 
 library(LMSstat)
 ```

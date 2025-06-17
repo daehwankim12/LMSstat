@@ -3,6 +3,7 @@
 .RData
 .Ruserdata
 .vscode
+.trunk
 renv
 renv.lock
 LMSstat.Rproj
